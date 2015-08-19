@@ -1,10 +1,12 @@
 # meta-toradex-yocto
-#////////////////////////////////////////////////////////////////////////////////////////
-#Bitmapper Integration ///
-#Maintaner:Piyush Ashtikar [piyushashtikar@outlook.com,piyush.ashtikar@bitmapper.com] ///
-#////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////
+Bitmapper Integration ///
+Maintaner:Piyush Ashtikar [piyushashtikar@outlook.com,piyush.ashtikar@bitmapper.com] ///
+////////////////////////////////////////////////////////////////////////////////////////
 This is unofficial bsp layer for toradex to support apalis imx6 daughter board on yocto poky framework.
+
 Using this bsp you can build the linux-imx for apalis.
+
 Rootfs images such as core-image-minimal(tested) and all other multimedia images(not-tested) can be used.
 Steps involved are:
 1:)in local.conf set machine to apalis-imx6
@@ -29,7 +31,7 @@ in sdargs change rootfs to mmcblk0p2(ie sdcard partition 2)
 9:)run sdboot
 Now core Image minimal should start.
 Done :)
-Fell free to ask any queries
+Feel free to ask any queries
 piyushashtikar@outlook.com
 piyush.ashtikar@bitmapper.com
 
