@@ -2,7 +2,7 @@
 
 Bitmapper Integration
 
-Maintaner:Piyush Ashtikar [piyushashtikar@outlook.com,piyush.ashtikar@bitmapper.com] 
+Maintainer:Piyush Ashtikar [piyushashtikar@outlook.com,piyush.ashtikar@bitmapper.com] 
 
 This is unofficial bsp layer for toradex to support apalis imx6 daughter board on yocto poky framework.
 
