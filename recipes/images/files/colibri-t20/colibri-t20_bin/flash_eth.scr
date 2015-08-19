@@ -1,0 +1,23 @@
+test -n ${hw-version} || if test $lnxoffset = 0x1200000; then setenv hw-version v11; else setenv hw-version v12; fi
+
+setenv check_configblock 'setexpr toradex_oui_addr $loadaddr + 8; nand read $loadaddr 0x300000 0x64; crc32 -v $toradex_oui_addr 3 94305232'
+
+setenv migrate_1 'nand read $loadaddr 0x15C0000 0x40; crc32 -v $toradex_oui_addr 3 94305232 && nand erase.part cfgblock && nand write $loadaddr 0x300000 0x64'
+setenv migrate_2 'nand read $loadaddr 0x1C80000 0x40; crc32 -v $toradex_oui_addr 3 94305232 && nand erase.part cfgblock && nand write $loadaddr 0x300000 0x64'
+setenv migrate_3 'nand read $loadaddr 0x7380000 0x40; crc32 -v $toradex_oui_addr 3 94305232 && nand erase.part cfgblock && nand write $loadaddr 0x300000 0x64'
+setenv migrate_4 'nand read $loadaddr 0x7900000 0x40; crc32 -v $toradex_oui_addr 3 94305232 && nand erase.part cfgblock && nand write $loadaddr 0x300000 0x64'
+setenv migrate_configblock 'setexpr toradex_oui_addr $loadaddr + 8; run migrate_1; run migrate_2; run migrate_3; run migrate_4'
+
+setenv prepare_rootfs 'ubi part ubi && ubi check rootfs || ubi create rootfs'
+setenv update_configblock 'tftpboot ${loadaddr} configblock.bin && nand erase.part cfgblock && nand write ${loadaddr} cfgblock ${filesize}'
+setenv update_uboot 'tftpboot ${loadaddr} colibri_t20-${ram-size}-${hw-version}-nand.img && nand erase 0x0 0x300000 && nand write ${loadaddr} 0x0 ${filesize}'
+setenv update_rootfs 'tftpboot ${loadaddr} ubifs_${leb-size}.img && run prepare_rootfs && ubi write ${loadaddr} rootfs ${filesize}'
+
+setenv echo_v2.3b7 echo "successfully updated U-Boot," \${note} "power-cycle and enter \"run setupdate\; run migrate_v2.3b7\" to complete update"
+setenv migrate_v2.3b7 'run migrate_configblock; nand erase.part ubi; run update_new'
+setenv update_v2.3b7 'setenv ram-size 256; run update_uboot && setenv note "wait a sec," && run echo_v2.3b7 && md 0x1ffffffc 1 && setenv ram-size 512 && run update_uboot && setenv note && run echo_v2.3b7'
+
+setenv update_new 'run check_configblock || run migrate_configblock; run update_uboot; run update_rootfs; reset'
+setenv update 'if test -v $ver; then run update_new; else run update_v2.3b7; fi'
+
+echo 'enter "run update" to update the entire module'

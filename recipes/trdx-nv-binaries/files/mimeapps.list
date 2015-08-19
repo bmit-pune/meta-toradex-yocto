@@ -1,0 +1,10 @@
+[Added Associations]
+video/mpeg=nvgstplayer.desktop;
+video/x-msvideo=nvgstplayer.desktop;
+video/mp4=nvgstplayer.desktop;
+video/quicktime=nvgstplayer.desktop;
+video/x-ms-wmv=nvgstplayer.desktop;
+video/x-matroska=cd nvgstplayer.desktop;
+audio/mpeg=nvgstplayer.desktop;
+audio/basic=aplay.desktop;
+audio/x-wav=aplay.desktop;

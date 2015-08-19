@@ -1,0 +1,41 @@
+setenv set_blkcnt 'setexpr blkcnt ${filesize} + 0x1ff && setexpr blkcnt ${blkcnt} / 0x200'
+setenv set_nextnum 'setexpr filenum ${filenum} + 1; setexpr blkstart ${blkstart} + ${blkcnt}'
+
+setenv check_1 'setenv conf_blk_offset 0x1fff; mmc read $loadaddr $conf_blk_offset 1'
+setenv check_2 'setenv conf_blk_offset 0xfff; mmc read $loadaddr $conf_blk_offset 1'
+setenv check_3 'setenv conf_blk_offset 0x7ff; mmc read $loadaddr $conf_blk_offset 1'
+setenv check_configblock 'setexpr toradex_oui_addr $loadaddr + 8; mmc dev 0 1; run check_1 || run check_2 || run check_3; crc32 -v $toradex_oui_addr 3 94305232'
+
+setenv migrate_1 'mmc dev 0 0; mmc read ${loadaddr} 6000 1; setenv conf_blk_offset 0x1fff; crc32 -v $toradex_oui_addr 3 94305232 && mmc dev 0 1 && mmc write $loadaddr $conf_blk_offset 1'
+setenv migrate_2 'mmc dev 0 0; mmc read ${loadaddr} 8000 1; setenv conf_blk_offset 0xfff; crc32 -v $toradex_oui_addr 3 94305232 && mmc dev 0 1 && mmc write $loadaddr $conf_blk_offset 1'
+setenv migrate_3 'mmc dev 0 0; mmc read ${loadaddr} 9000 1; setenv conf_blk_offset 0x7ff; crc32 -v $toradex_oui_addr 3 94305232 && mmc dev 0 1 && mmc write $loadaddr $conf_blk_offset 1'
+setenv migrate_4 'mmc dev 0 0; mmc read ${loadaddr} 34000 1; setenv conf_blk_offset 0x1fff; crc32 -v $toradex_oui_addr 3 94305232 && mmc dev 0 1 && mmc write $loadaddr $conf_blk_offset 1'
+setenv migrate_5 'mmc dev 0 0; mmc read ${loadaddr} 36000 1; setenv conf_blk_offset 0xfff; crc32 -v $toradex_oui_addr 3 94305232 && mmc dev 0 1 && mmc write $loadaddr $conf_blk_offset 1'
+setenv migrate_6 'mmc dev 0 0; mmc read ${loadaddr} 37000 1; setenv conf_blk_offset 0x7ff; crc32 -v $toradex_oui_addr 3 94305232 && mmc dev 0 1 && mmc write $loadaddr $conf_blk_offset 1'
+setenv migrate_configblock 'setexpr toradex_oui_addr $loadaddr + 8; run migrate_1; run migrate_2; run migrate_3; run migrate_4; run migrate_5; run migrate_6'
+
+setenv cp_file_chunk 'tftpboot ${loadaddr} root.ext3-${filenum}; run set_blkcnt; mmc dev 0 0 && mmc write ${loadaddr} ${blkstart} ${blkcnt}'
+
+setenv update_uboot 'tftpboot ${loadaddr} apalis_t30.img && run set_blkcnt && mmc dev 0 1 && mmc write ${loadaddr} 0x0 ${blkcnt}'
+
+setenv update_kernel 'tftpboot ${loadaddr} uImage && fatwrite mmc 0:1 ${loadaddr} uImage ${filesize}'
+
+setenv update_fdt 'tftpboot ${loadaddr} ${fdt_file} && fatwrite mmc 0:1 ${loadaddr} ${fdt_file} ${filesize}'
+
+setenv update_configblock 'run check_configblock; tftpboot ${loadaddr} configblock.bin && run set_blkcnt && mmc dev 0 1 && mmc write ${loadaddr} ${conf_blk_offset} ${blkcnt}'
+
+setenv update_1 'tftpboot ${loadaddr} mbr.bin && mmc dev 0 0 && mmc write ${loadaddr} 0x0 0x1'
+setenv update_2 'tftpboot ${loadaddr} boot.vfat && run set_blkcnt && mmc dev 0 0 && mmc write ${loadaddr} 0x2000 ${blkcnt}'
+#do it in chunks of 256M to fit into DDR RAM of the smallest module
+#split root.ext3 into multiple 256M chunks before copying to TFTP folder as follows
+#split -a 1 -b `expr 256 \* 1024 \* 1024` -d root.ext3 root.ext3-
+setenv update_3 'setenv filesize 10000000; setenv filenum 0; setenv blkstart a000; while test ${filesize} -eq "10000000"; do run cp_file_chunk; run set_nextnum; done'
+
+setenv echo_v2.3b2 echo "successfully updated U-Boot, power-cycle and enter \"run setupdate\; run migrate_v2.3b2\" to complete update"
+setenv migrate_v2.3b2 'run migrate_configblock; run update_new'
+setenv update_v2.3b2 'run update_uboot && run echo_v2.3b2'
+
+setenv update_new 'run check_configblock || run migrate_configblock; run update_uboot; run update_1; run update_2; run update_3; reset'
+setenv update 'if test -v $ver; then run update_new; else run update_v2.3b2; fi'
+
+echo 'enter "run update" to update the entire module'

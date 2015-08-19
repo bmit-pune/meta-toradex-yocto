@@ -1,0 +1,11 @@
+--- a/src/tools/qdoc/qdoc.pro.orig	2014-07-06 21:10:09.054048842 +0200
++++ b/src/tools/qdoc/qdoc.pro	2014-07-06 21:11:00.960577053 +0200
+@@ -74,6 +74,8 @@
+            tree.cpp \
+            yyindent.cpp
+ 
++QMAKE_CXXFLAGS_CXX11 =
++
+ ### QML/JS Parser ###
+ 
+ include(qmlparser/parser.pri)

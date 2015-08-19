@@ -1,0 +1,6 @@
+Toradex Linux BSP
+=================
+
+Use the update.sh script to update your module. Check the Release Notes for
+detailed instruction how to use flash your module. The Release Notes is located
+in the same directory of the BSP release tarball.

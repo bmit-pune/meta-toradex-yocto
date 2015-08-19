@@ -1,0 +1,1 @@
+../../library/mk-u-boot-scripts.sh

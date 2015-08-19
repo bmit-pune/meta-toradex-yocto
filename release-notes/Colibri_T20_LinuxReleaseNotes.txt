@@ -1,0 +1,272 @@
+************************************************
+Release Notes:  Linux Image V1.x for Colibri T20
+************************************************
+
+Contents:
+- U-Boot 2011.06 boot loader
+- Linux 2.6.36.2 kernel
+- OpenEmbedded 2011.03 based root file system, using LXDE desktop environment
+
+Licensing:
+- proprietary multimedia codecs and Adobe Flash player included for evaluation purpose only
+- customer required to obtain proper re-distribution license
+
+********************************************************************************
+Linux Image V1.2 (December 10, 2012)
+- update
+  - changed to unified WinCE/Linux loader, added Windows batch file
+    http://developer.toradex.com/software-resources/arm-family/linux/images/flashing-t20-linux-from-windows 
+- updated U-Boot
+  - fix to correctly reset Ethernet chip
+  - sanity checks, fail early when module is flashed with wrong module version / ram size
+  - use a generic approach to get the MTD partitions to ease changes to the partition layout
+    (Initial partition table parsing courtesy of Mitja Špes from LXNAV)
+  - added command 'enterrcm' which puts the CPU into recovery mode
+- updated kernel
+  - fix to correctly reset Ethernet chip
+  - added one wire platform data (conditional, CONFIG_W1_MASTER_TEGRA must be enabled)
+- rootfs
+  - no changes to V1.1
+
+********************************************************************************
+Linux Image V1.1 (October 31, 2012)
+- none, this version is identical to the previous beta version V1.1 Beta 2
+
+********************************************************************************
+Linux Image V1.1 Beta 2 (September 26, 2012)
+- updated BCT
+  - Colibri T20 V1.1c unified with BCT for other module versions
+- updated U-Boot
+  - SPI fix, U-Boot defined one pin to be GPIO which prevented SPI from working
+  - backlight GPIO switched on upon boot
+  - new environment variable 'setup' which makes e.g. carveout memory easily adjustable
+- updated kernel
+  - backlight PWM clock changed from 500kHz to 200Hz
+  - PWM B, PWM C, PWM D now accessible from userspace via /sys/class/leds
+- updated rootfs
+  - LXDM fix, interactive login also works now, not only autologin
+  - libnvodm_query.so fix, no longer configures GPIOs meant for NVIDIA's developer platform
+  - added evtest, test program to monitor input device events
+
+
+********************************************************************************
+Linux Image V1.1 Beta 1 (July 10, 2012)
+- support for Ambicom WL250N-USB Wireless 802.11b/g/n (V1.0a) with Ralink RT3070 chipset (note: requires proprietary rt2870.bin firmware as well)
+- fix horizontal/vertical sync and pixel clock polarity to be low rather than high
+- implement analog input AD0 aka ANALOG_IN0 as voltage_now and AD1 aka ANALOG_IN1 as temp value (see /sys/class/power_supply/colibri_t20-analog_inputs)
+- revise Ethernet MAC address assignment: should now use MAC from EEPROM if set and further handles up to two instances of custom user MACs (2nd one with a 0x100000 offset), this way customer does not have to put EEPROM on a secondary Ethernet on carrier board and still gets a valid official MAC address from us (e.g. analogous to how we do it on our Protea carrier board)
+- fix audio codec DAPM pin assignment (note this is only an issue if power management is to be used in the future)
+- fix regular framebuffer (e.g. /dev/fb0) access from userspace
+- fix GPIO flags direction during initialisation
+- enable cifs file system support required for SMB aka Samba allowing easy Windows network share access
+- upping host1x clock from 166 to 266.4 MHz, mpe from 111 to 300 MHz and vde from 240 to 300 MHz
+- decreasing pll_m clock from illegal 721.5 to 666 MHz
+- disable AVDD_VDAC by default to safe power and reduce temperature
+- decrease audio logging
+- implement U-Boot framebuffer console with VESA VGA timings
+- fix U-Boot environment string buffer overrun issue
+- install devmem2, minicom and i2c-tools packages
+
+********************************************************************************
+Linux Image V1.0 (May 3, 2012)
+- none, this version is identical to the previous beta version V1.0 beta 6
+
+********************************************************************************
+Linux Image V1.0 Beta 6 (March 23, 2012)
+- integrated new LM95245 driver with improved accuracy (e.g. reports in millidegrees)
+- integrated watchdog support
+- I2C stack fixes/optimisations
+- MMC stack fixes/optimisations
+- USB stack fixes/optimisations
+- optional full HD only display manager to work around nv_omx_lvdsoverlaysink bug
+- generic nvflash (e.g. able to flash WinCE as well as Linux)
+- support mass production V1.2a modules
+- SD boot with proper U-Boot environment
+- nvgstplayer from L4T integration/Gstreamer with decodebin2 and typefindfunction
+- updated Adobe Flash player (now able to play youtube HD videos)
+- T20 specific wallpaper
+- true 50 MHz SPI communication
+- tegrastats-gtk, CPU information visible in graphical environment
+- automatic USB device/host detection aka OTG support
+- HDMI SPDIF audio fix
+
+********************************************************************************
+Linux Image V1.0 Beta 5 (January 26, 2012)
+- USB full speed limiting (see usb_high_speed kernel command line argument)
+- spidev driver on default SPI pins (SPI4) without explicit pull-up/downs
+- GMI with multiplexed nPWE and RDnWR
+- note about certain conflicting GPIO/pin usage on other carrier boards (e.g. MECS Tellurium and Protea)
+- improved display/video performance, now capable of doing dual full HD video decode
+- Ethernet detection fault fix
+- MMC/SD and NAND performance optimisation, optionally support 8-bit SDHCI on HSMMC controller
+  (requires custom carrier board)
+- framebuffer console support
+- USB raw HID device support enabled in kernel configuration (for easy Toradex Oak connection)
+- updated ASIX driver to version 4.2.0 (Sep. 19, 2011)
+- custom Ethernet MAC Address handling (see asix_mac kernel command line argument)
+- performance optimisations
+- Tegra internal RTC support (in addition to PMIC plus board level I2C RTC)
+- machine ID changed to official Colibri T20 one formerly called Tegra 2 (http://www.arm.linux.org.uk/developer/machines/list.php?id=3323)
+- U-Boot supporting environment storage in NAND flash, Ethernet, MMC/SD cards, NAND flash,
+  RAM size auto detection, serial console, Toradex Colibri configuration block and USB storage as host
+- serial number and board revision handling (see /proc/cpuinfo)
+- LXDE
+
+********************************************************************************
+Linux Image V1.0 Beta 4 (September 26, 2011)
+- GPIOConfig Toradex GPIO configuration tool V1.0 Beta 1
+- optimised NAND timings
+- 18-bit AC97 audio capture
+- optional 18-bit audio playback (see commented out TEGRA_AC97_32BIT_PLAYBACK define in sound/soc/tegra/tegra_soc.h)
+- USB webcam support
+- optional webcam OpenCV integration (see http://developer.toradex.com/software-resources/arm-family/linux/linux-(colibri-t20)-know-how#OpenCV)
+- optional boot from MMC/SD card support (see further below)
+- optional silent Fastboot (e.g. no serial debug output on UARTA, see bin/fastboot_silent.bin)
+- optional MECS Tellurium display and USB hub support (see commented out MECS_TELLURIUM define in arch/arm/mach-tegra/board-colibri_t20.h)
+
+********************************************************************************
+Linux Image V1.0 Beta 3 (August 8, 2011)
+- kernel support for paging of anonymous memory (swap)
+- 16-bit colour support to be more memory conscious
+- TFTLCD aka VGA defaults to 640x480 @ 60 Hz (see /usr/lib/libnvodm_disp.so)
+- software EDID support (see EDIDUpdate.pl and generate_edid)
+
+********************************************************************************
+Linux Image V1.0 Beta 2 (July 22, 2011)
+- gnome-mount now supported
+- AC97 audio playback
+- ALSA amixer
+- PWM back light automatically set through /etc/init.d/gdm
+
+********************************************************************************
+Linux Image V1.0 Beta 1 (July 7, 2011)
+- GPIO and PWM support
+- graphics TFTLCD with more hard coded resolutions: 320x240, 480x272, 640x480,
+  720x480, 800x480, 848x480, 720x576, 800x600, 1024x600, 1024x768, 1024x768,
+  1280x720, 1280x768, 1152x864, 1360x768, 1366x768, 1280x960, 1440x900,
+  1280x1024, 1400x1050, 1680x1050, 1600x1200, 1920x1080, 1920x1200
+- tegrastats
+- HDMI SPDIF audio
+- USB audio driver
+- AC97 touch
+- USB device Ethernet RNDIS gadget
+- fixed MMC/SD card detection
+- released Linux kernel source code
+- Firefox with Adobe flash
+- Gstreamer video playback
+
+********************************************************************************
+Notes:
+- 115200 baud serial debug console on UARTA aka FFUART (lower X25 on EvalBoards, X13 on Iris) without any handshake
+- user account: root with empty password
+- YAFFS2 flash root file system
+- opkg package manager
+- HDMI aka DVI-D supports HD resolutions only (e.g. 480p, 576p, 720p or 1080p)
+- Linux host used for recovery mode flashing requires proper 32-bit execution environment (e.g. install ia32-libs on 64-bit Ubuntu)
+
+Working:
+- U-Boot boot loader
+  - environment storage in NAND flash or on MMC/SD card
+  - Ethernet
+  - MMC/SD cards
+  - NAND flash with NVIDIA partition table parsing
+  - RAM size auto detection
+  - serial console
+  - Toradex Colibri configuration block handling
+  - USB storage as host
+- Linux kernel
+  - GPIOlib /sys/class/gpio
+  - temperature sensor /sys/bus/i2c/devices/4-004c
+  - RTC (Tegra internal, PMIC and board level I2C RTC)
+  - Ethernet eth0
+  - NAND flash MTD YAFFS2
+  - serial console debug UARTA
+  - high speed serial UARTB and UARTD
+  - I2C via /dev/i2c-X
+  - MMC/SD card, optional 8-bit SDHCI
+  - PWM LEDs /sys/class/leds/  - HDMI SPDIF audio
+  - AC97 audio capture, playback and touch
+  - SPI via /dev/spidev3.0
+  - GMI with multiplexed nPWE and RDnWR
+  - framebuffer console
+  - custom Ethernet MAC Address
+  - serial number and board revision
+  - watchdog
+  - USB host port
+  - USB audio driver
+  - USB webcam
+  - USB raw HID device /dev/hidrawX
+  - USB device Ethernet RNDIS gadget
+  - automatic USB device/host detection aka OTG support
+  - analog input AD0, AD1 /sys/class/power_supply/colibri_t20-analog_inputs 
+- Linux user-space
+  - graphics (TFTLCD and HDMI, optional CRT)
+  - tegrastats
+  - Firefox with Adobe Flash player
+  - Gstreamer video playback, dual full HD video decode
+  - GPIO config tool
+  - LXDE
+  - tegrastats-gtk, CPU information visible in graphical environment
+
+Not working:
+- suspend
+- power management
+- U-Boot USB keyboard
+
+
+*****************************************************************************************************************************************************************************************
+NAND Boot: Colibri T20 256MB V1.1b (Sample), Colibri T20 512MB V1.1c (Sample), Colibri T20 256MB V1.2a, Colibri T20 512MB V1.2a, Colibri T20 256MB IT V1.2a or Colibri T20 512MB IT V1.2a
+*****************************************************************************************************************************************************************************************
+
+Initial Preparation:
+- download and extract T20_LinuxImageVx.yz.tar.bz2 package
+
+Flash NAND:
+- EvalBoard V3.1a
+  - connect USB B (X29) or USB micro A/B (X30) to development workstation using regular or micro USB cable
+  - the jumper JP2 must be open
+  - press and hold recovery mode switch (SW9) during power up
+- Iris V1.1a
+  - connect USB micro A/B (X12) to development workstation using regular micro USB cable
+  - short pin 1-2 of JP1 on Iris for RECOVERY
+(other carrier boards see http://developer.toradex.com/knowledge-base/txx-recovery-mode)
+- make sure that the carrier board supports USB high speed 
+  - Iris & EvalBoard V3.1a OK, for other carrier boards see http://developer.toradex.com/knowledge-base/usb-2.0-high-speed-%28480mbps%29 )
+- apply power or reset
+- run update.sh script
+- use -r 512 option for 512 MB RAM modules
+- use -v V1_1 option for V1.1b or V1.1c modules
+
+Boot from NAND:
+- EvalBoard V3.1a
+  - do no longer press SW9
+- Iris V1.1a
+  - do no longer short any pins of JP1
+- power cycle
+- upon first boot post-install scripts are run which takes around 2 minutes, please be patient
+
+
+*********************************************************************************************************************************************************************************************************************************
+SD Card Boot: Colibri T20 256MB V1.1b (Sample), Colibri T20 512MB V1.1c (Sample), Colibri T20 256MB V1.2a, Colibri T20 512MB V1.2a, Colibri T20 256MB IT V1.2a or Colibri T20 512MB IT V1.2a on Iris Pico ITX Carrier Board V1.1a
+*********************************************************************************************************************************************************************************************************************************
+
+Initial Preparation:
+- populate 100 ohm resistors R109, R111, R112 and R113 close to micro SD card holder (X10, see bottom assembly drawing fig.7 page 21 of Iris data sheet)
+- populate boot mode header (JP1)
+- insert micro SD card into micro SD card holder (X10)
+- download and extract T20_LinuxImageVx.yz.tar.bz2 package
+
+Flash SD Card:
+- connect USB micro A/B (X12) to development workstation using regular micro USB cable
+- short all 3 pins of JP1 for RECOVERY and SD_BOOT
+- apply power or reset
+- run update.sh script with -b hsmmc option
+- use -r 512 option for 512 MB RAM modules
+- use -v V1_1 option for V1.1b or V1.1c modules
+
+Boot from SD Card:
+- short pin 2-3 of JP1 for SD_BOOT
+- power cycle
+- upon first boot post-install scripts are run which takes around 2 minutes, please be patient
+
+Toradex, December 3, 2014

@@ -1,0 +1,19 @@
+diff --git a/Makefile b/Makefile
+index 7a1fc14..a0f8f4a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,12 +1,12 @@
+ INSTALL_PATH=$(DESTDIR)/usr/bin
+ 
+-LDFLAGS+=-lmcc
++LDLIBS+=-lmcc
+ 
+ all: build/mcc-pingpong
+ 
+ build/mcc-pingpong: src/pingpong.c
+ 	mkdir -p build/
+-	$(CC) $< -o $@ $(CFLAGS) $(LDFLAGS)
++	$(CC) $< -o $@ $(CFLAGS) $(LDLIBS) $(LDFLAGS)
+ 
+ install:
+ 	mkdir -p $(INSTALL_PATH)

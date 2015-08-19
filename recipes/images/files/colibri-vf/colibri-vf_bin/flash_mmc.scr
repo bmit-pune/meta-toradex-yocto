@@ -1,0 +1,3 @@
+setenv interface mmc
+fatload ${interface} 0:1 ${loadaddr} flash_blk.img
+source ${loadaddr}

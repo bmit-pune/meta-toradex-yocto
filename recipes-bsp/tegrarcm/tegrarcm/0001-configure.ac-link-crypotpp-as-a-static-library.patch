@@ -1,0 +1,29 @@
+From fb84c35772a1883c48646638e2b7618442f82ff6 Mon Sep 17 00:00:00 2001
+From: Max Krummenacher <max.krummenacher@toradex.com>
+Date: Tue, 5 May 2015 13:54:11 +0200
+Subject: [PATCH] configure.ac: link crypotpp as a static library
+
+We want to build -native for a 32 bit machine but have issues with certain
+distributions 32bit libcryptopp.so. So link against our own build
+of a 32bit libcryptopp.a
+---
+ configure.ac    | 2 +-
+ src/Makefile.am | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index c95a0ec..250f3c2 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -20,7 +20,7 @@ AC_CHECK_LIB([pthread],
+ PKG_CHECK_MODULES([LIBUSB], [libusb-1.0])
+ AC_LANG(C++)
+ SAVED_LDFLAGS=$LDFLAGS
+-LDFLAGS="$LDFLAGS -lcryptopp -lpthread"
++LDFLAGS="$LDFLAGS -m32 -Wl,-Bstatic -lcryptopp -Wl,-Bdynamic -lpthread"
+ CRYPTOLIB=
+ AC_LINK_IFELSE(
+ 	[AC_LANG_PROGRAM([#include <cryptopp/cryptlib.h>],
+-- 
+1.9.3
+

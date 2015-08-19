@@ -1,0 +1,6 @@
+#flash_mmc has been renamed to flash_blk, ensure compatibilty when updating from older versions
+test -n ${interface} || setenv interface mmc
+test -n ${drive} || setenv drive 1
+
+fatload ${interface} ${drive}:1 ${loadaddr} flash_blk.img
+source ${loadaddr}

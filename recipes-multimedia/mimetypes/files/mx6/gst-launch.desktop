@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=gst-launch
+# on LVDS panel
+#Exec=gst-launch filesrc location= "%f" ! decodebin ! mfw_v4lsink device=/dev/video18
+# Fullscreen on the main window? or the only window?
+#Exec=gst-launch playbin2 uri=%u \"video_sink=mfw_v4lsink force-aspect-ratio=true\"
+# in a 640x360 overlay part of the main window
+#Exec=gst-launch playbin2 uri=%u \"video_sink=mfw_v4lsink force-aspect-ratio=true disp-width=640 disp-height=360 axis-top=10 axis-left=630\"
+# in a 1280x720 overlay part of the main window
+Exec=gst-launch playbin2 uri=%u \"video_sink=mfw_v4lsink force-aspect-ratio=true disp-width=1280 disp-height=720 axis-top=10 axis-left=630\"
+Terminal=true
+NoDisplay=true

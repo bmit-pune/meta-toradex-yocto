@@ -1,0 +1,203 @@
+diff --git a/arch/arm/mach-tegra/board-apalis_t30-panel.c b/arch/arm/mach-tegra/board-apalis_t30-panel.c
+index f8f0672..5d4af1f 100644
+--- a/arch/arm/mach-tegra/board-apalis_t30-panel.c
++++ b/arch/arm/mach-tegra/board-apalis_t30-panel.c
+@@ -260,6 +260,7 @@ static struct tegra_dc_mode apalis_t30_panel_modes[] = {
+ 		.v_front_porch	= 10,		/* lower_margin */
+ 	},
+ #else /* TEGRA_FB_VGA */
++#if 0
+ 	{
+ 		/* 800x480@60 (e.g. EDT ET070080DH6) */
+ 		.pclk		= 32460000,
+@@ -410,6 +411,7 @@ static struct tegra_dc_mode apalis_t30_panel_modes[] = {
+ 		.v_front_porch	= 1,
+ //high active vertical sync polarity
+ 	},
++#endif	
+ 	{
+ 		/* LG LP156WF1 15.6 inch full HD dual channel LVDS panel */
+ 		.pclk		= 138500000,
+@@ -503,8 +505,8 @@ static struct tegra_fb_data apalis_t30_fb_data = {
+ 	.xres		= 640,
+ 	.yres		= 480,
+ #else /* TEGRA_FB_VGA */
+-	.xres		= 800,
+-	.yres		= 480,
++	.xres		= 1920,
++	.yres		= 1080,
+ #endif /* TEGRA_FB_VGA */
+ 	.bits_per_pixel	= 16,
+ 	.flags		= TEGRA_FB_FLIP_ON_PROBE,
+@@ -512,8 +514,8 @@ static struct tegra_fb_data apalis_t30_fb_data = {
+ 
+ static struct tegra_fb_data apalis_t30_hdmi_fb_data = {
+ 	.win		= 0,
+-	.xres		= 640,
+-	.yres		= 480,
++	.xres		= 1920,
++	.yres		= 1080,
+ 	.bits_per_pixel	= 16,
+ 	.flags		= TEGRA_FB_FLIP_ON_PROBE,
+ };
+diff --git a/arch/arm/mach-tegra/board-apalis_t30.h b/arch/arm/mach-tegra/board-apalis_t30.h
+index 38a86f6..e12ee96 100644
+--- a/arch/arm/mach-tegra/board-apalis_t30.h
++++ b/arch/arm/mach-tegra/board-apalis_t30.h
+@@ -125,7 +125,7 @@
+ #define TDIODE_OFFSET	(10000)	/* in millicelsius */
+ 
+ /* Run framebuffer in VGA mode */
+-#define TEGRA_FB_VGA
++//#define TEGRA_FB_VGA
+ 
+ int apalis_t30_regulator_init(void);
+ int apalis_t30_suspend_init(void);
+diff --git a/arch/arm/mach-tegra/board-colibri_t20-panel.c b/arch/arm/mach-tegra/board-colibri_t20-panel.c
+index 6d7ec83..f393b3b 100644
+--- a/arch/arm/mach-tegra/board-colibri_t20-panel.c
++++ b/arch/arm/mach-tegra/board-colibri_t20-panel.c
+@@ -224,6 +224,7 @@ static struct tegra_dc_mode colibri_t20_panel_modes[] = {
+ 		.v_front_porch	= 10,		/* lower_margin */
+ 	},
+ #else /* TEGRA_FB_VGA */
++#if 0
+ #ifndef CONFIG_ANDROID
+ 	{
+ 		/* 800x480@60 (e.g. EDT ET070080DH6) */
+@@ -355,6 +356,7 @@ static struct tegra_dc_mode colibri_t20_panel_modes[] = {
+ 		.v_front_porch	= 1,
+ //high active vertical sync polarity
+ 	},
++#endif	
+ 	{
+ 		/* 1920x1080p 59.94/60hz EIA/CEA-861-B Format 16 */
+ 		.pclk		= 144000000,
+@@ -439,8 +441,8 @@ static struct tegra_fb_data colibri_t20_fb_data = {
+ 	.yres		= 480,
+ #else /* TEGRA_FB_VGA */
+ #ifndef CONFIG_ANDROID
+-	.xres		= 800,
+-	.yres		= 480,
++	.xres		= 1920,
++	.yres		= 1080,
+ #else /* CONFIG_ANDROID */
+ 	.xres		= 1280,
+ 	.yres		= 720,
+@@ -452,8 +454,8 @@ static struct tegra_fb_data colibri_t20_fb_data = {
+ 
+ static struct tegra_fb_data colibri_t20_hdmi_fb_data = {
+ 	.win		= 0,
+-	.xres		= 640,
+-	.yres		= 480,
++	.xres		= 1920,
++	.yres		= 1080,
+ 	.bits_per_pixel	= 16,
+ 	.flags		= TEGRA_FB_FLIP_ON_PROBE,
+ };
+@@ -461,15 +463,15 @@ static struct tegra_fb_data colibri_t20_hdmi_fb_data = {
+ static struct tegra_dc_out_pin colibri_t20_dc_out_pins[] = {
+ 	{
+ 		.name	= TEGRA_DC_OUT_PIN_H_SYNC,
+-		.pol	= TEGRA_DC_OUT_PIN_POL_LOW,
++		.pol	= TEGRA_DC_OUT_PIN_POL_HIGH,
+ 	},
+ 	{
+ 		.name	= TEGRA_DC_OUT_PIN_V_SYNC,
+-		.pol	= TEGRA_DC_OUT_PIN_POL_LOW,
++		.pol	= TEGRA_DC_OUT_PIN_POL_HIGH,
+ 	},
+ 	{
+ 		.name	= TEGRA_DC_OUT_PIN_PIXEL_CLOCK,
+-		.pol	= TEGRA_DC_OUT_PIN_POL_LOW,
++		.pol	= TEGRA_DC_OUT_PIN_POL_HIGH,
+ 	},
+ };
+ 
+diff --git a/arch/arm/mach-tegra/board-colibri_t20.h b/arch/arm/mach-tegra/board-colibri_t20.h
+index b6b5e6a..8e82626 100644
+--- a/arch/arm/mach-tegra/board-colibri_t20.h
++++ b/arch/arm/mach-tegra/board-colibri_t20.h
+@@ -41,7 +41,7 @@
+ 
+ /* Run framebuffer in VGA mode */
+ #ifndef CONFIG_ANDROID
+-#define TEGRA_FB_VGA
++//#define TEGRA_FB_VGA
+ #endif
+ 
+ int colibri_t20_emc_init(void);
+diff --git a/arch/arm/mach-tegra/board-colibri_t30-panel.c b/arch/arm/mach-tegra/board-colibri_t30-panel.c
+index ee74874..c08241e 100644
+--- a/arch/arm/mach-tegra/board-colibri_t30-panel.c
++++ b/arch/arm/mach-tegra/board-colibri_t30-panel.c
+@@ -263,6 +263,7 @@ static struct tegra_dc_mode colibri_t30_panel_modes[] = {
+ 		.v_front_porch	= 10,		/* lower_margin */
+ 	},
+ #else /* TEGRA_FB_VGA */
++#if 0
+ 	{
+ 		/* 800x480@60 (e.g. EDT ET070080DH6) */
+ 		.pclk		= 32460000,
+@@ -400,6 +401,7 @@ static struct tegra_dc_mode colibri_t30_panel_modes[] = {
+ 		.v_front_porch	= 1,
+ //high active vertical sync polarity
+ 	},
++#endif	
+ 	{
+ 		/* 1920x1080p 59.94/60hz EIA/CEA-861-B Format 16 */
+ 		.pclk		= 148500000,
+@@ -480,8 +482,8 @@ static struct tegra_fb_data colibri_t30_fb_data = {
+ 	.xres		= 640,
+ 	.yres		= 480,
+ #else /* TEGRA_FB_VGA */
+-	.xres		= 800,
+-	.yres		= 480,
++	.xres		= 1920,
++	.yres		= 1080,
+ #endif /* TEGRA_FB_VGA */
+ 	.bits_per_pixel	= 16,
+ 	.flags		= TEGRA_FB_FLIP_ON_PROBE,
+@@ -489,8 +491,8 @@ static struct tegra_fb_data colibri_t30_fb_data = {
+ 
+ static struct tegra_fb_data colibri_t30_hdmi_fb_data = {
+ 	.win		= 0,
+-	.xres		= 640,
+-	.yres		= 480,
++	.xres		= 1920,
++	.yres		= 1080,
+ 	.bits_per_pixel	= 16,
+ 	.flags		= TEGRA_FB_FLIP_ON_PROBE,
+ };
+@@ -498,15 +500,15 @@ static struct tegra_fb_data colibri_t30_hdmi_fb_data = {
+ static struct tegra_dc_out_pin colibri_t30_dc_out_pins[] = {
+ 	{
+ 		.name	= TEGRA_DC_OUT_PIN_H_SYNC,
+-		.pol	= TEGRA_DC_OUT_PIN_POL_LOW,
++		.pol	= TEGRA_DC_OUT_PIN_POL_HIGH,
+ 	},
+ 	{
+ 		.name	= TEGRA_DC_OUT_PIN_V_SYNC,
+-		.pol	= TEGRA_DC_OUT_PIN_POL_LOW,
++		.pol	= TEGRA_DC_OUT_PIN_POL_HIGH,
+ 	},
+ 	{
+ 		.name	= TEGRA_DC_OUT_PIN_PIXEL_CLOCK,
+-		.pol	= TEGRA_DC_OUT_PIN_POL_LOW,
++		.pol	= TEGRA_DC_OUT_PIN_POL_HIGH,
+ 	},
+ };
+ 
+diff --git a/arch/arm/mach-tegra/board-colibri_t30.h b/arch/arm/mach-tegra/board-colibri_t30.h
+index 745d2a4..a243175 100644
+--- a/arch/arm/mach-tegra/board-colibri_t30.h
++++ b/arch/arm/mach-tegra/board-colibri_t30.h
+@@ -68,7 +68,7 @@
+ #define TDIODE_OFFSET	(10000)	/* in millicelsius */
+ 
+ /* Run framebuffer in VGA mode */
+-#define TEGRA_FB_VGA
++//#define TEGRA_FB_VGA
+ 
+ int colibri_t30_regulator_init(void);
+ int colibri_t30_suspend_init(void);

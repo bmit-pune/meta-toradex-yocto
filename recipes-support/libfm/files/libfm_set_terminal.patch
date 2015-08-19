@@ -1,0 +1,10 @@
+--- libfm-0.1.17/data/libfm.conf.orig	2013-02-05 13:49:33.394176746 +0100
++++ libfm-0.1.17/data/libfm.conf	2013-02-05 13:50:27.464253338 +0100
+@@ -2,6 +2,7 @@
+ single_click=0
+ use_trash=1
+ confirm_del=1
++terminal=lxterminal
+ thumbnail_local=1
+ thumbnail_max=2048
+ 

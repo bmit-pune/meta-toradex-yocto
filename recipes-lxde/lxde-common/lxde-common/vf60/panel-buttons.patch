@@ -1,0 +1,24 @@
+--- lxde-common-0.99.0/lxpanel/panel.in~	2014-10-23 16:08:00.000000000 +0200
++++ lxde-common-0.99.0/lxpanel/panel.in	2014-12-29 22:16:04.310587839 +0100
+@@ -53,7 +53,10 @@
+             id=pcmanfm.desktop
+         }
+         Button {
+-            id=firefox.desktop
++            id=midori.desktop
++        }
++        Button {
++            id=lxterminal.desktop
+         }
+     }
+ }
+@@ -134,9 +137,6 @@
+     type = launchbar
+     Config {
+         Button {
+-            id=lxde-screenlock.desktop
+-        }
+-        Button {
+             id=lxde-logout.desktop
+         }
+     }

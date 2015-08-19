@@ -1,0 +1,18 @@
+[settings]
+default-encoding=ISO-8859-1
+enable-developer-extras=true
+enable-site-specific-quirks=true
+enable-javascript=true
+last-window-width=630
+last-window-height=400
+last-panel-position=248
+location-entry-search=https://duckduckgo.com/?q=%s
+toolbar-items=TabNew,Back,NextForward,ReloadStop,BookmarkAdd,Location,Search,Trash,CompactMenu
+homepage=http://www.toradex.com/
+tabhome=about:dial
+download-folder=/home/root
+text-editor=/usr/bin/leafpad
+maximum-cache-size=5
+load-on-startup=MIDORI_STARTUP_HOMEPAGE
+proxy-type=MIDORI_PROXY_NONE
+user-agent=Mozilla/5.0 (X11; Linux) AppleWebKit/535.22 (KHTML, like Gecko) Chrome/18.0.1025.133 Safari/535.22 Midori/0.5

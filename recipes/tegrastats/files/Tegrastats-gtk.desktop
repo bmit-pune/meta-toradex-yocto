@@ -1,0 +1,11 @@
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Icon[C]=gnome-monitor.png
+Exec=/usr/bin/tegrastats-gtk
+Name[C]=Tegrastats-gtk
+Name=Tegrastats-gtk
+Icon=gnome-monitor.png

@@ -1,0 +1,1 @@
+../library/tegra/update.sh

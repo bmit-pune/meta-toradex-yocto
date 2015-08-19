@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+# mount drives missed during the udev 'add' action due to not yet avaliable filesytem
+#
+# Based on debian apmd scripts
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+
+[ -f /etc/default/rcS ] && . /etc/default/rcS
+
+case "$1" in
+    start)
+	#get all found drives
+	LIST=`ls /dev/sd??`
+
+	for DRIVEFILE in $LIST
+	do
+		#if the drive is not in the already mounted drives generate an add event
+		DRIVE=`basename $DRIVEFILE`
+		cat /proc/mounts | awk '{print $1}' | grep -q "^$DRIVEFILE" || udevadm trigger --subsystem-match=block --sysname-match=$DRIVE  --action=add ; echo "mounted $DRIVEFILE"
+	done
+	;;
+    *)
+	echo "Usage: /etc/init.d/udev-late-mount {start}"
+	exit 1
+	;;
+esac
+
+exit 0
+
+

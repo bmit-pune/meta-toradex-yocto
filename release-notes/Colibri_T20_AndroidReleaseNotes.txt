@@ -1,0 +1,131 @@
+*********************************************************
+Release Notes:  Android Image V1.0 Beta 1 for Colibri T20
+*********************************************************
+
+Please note that this Android image is for evaluation purposes only, and is provided as-is.
+Customers should also note that support is limited, and Android source code for this image will not be published at the present time.
+
+Contents:
+- U-Boot 2011.06 boot loader
+- Linux 3.1.10 kernel, based on NVIDIA's Linux for Tegra (L4T) release 16-r3
+- Android ICS 4.0.4 file system
+
+Licensing:
+- proprietary multimedia codecs included for evaluation purpose only
+- customer required to obtain proper re-distribution license
+
+Notes:
+- 115200 baud serial debug console on UARTA aka FFUART (lower X25 on EvalBoards, X13 on Iris) without any handshake
+- YAFFS2 flash file systems
+- Linux host used for recovery mode flashing requires proper 32-bit execution environment (e.g. install ia32-libs on 64-bit Ubuntu)
+
+Working:
+- U-Boot boot loader
+  - environment storage in NAND flash
+  - Ethernet
+  - MMC/SD cards
+  - NAND flash with NVIDIA partition table parsing
+  - RAM size auto detection
+  - serial console debug UARTA
+  - Toradex Colibri configuration block handling
+  - USB storage as host
+  - TFTLCD framebuffer support
+- Linux kernel
+  - GPIOlib /sys/class/gpio
+  - temperature sensor /sys/bus/i2c/devices/4-004c
+  - RTC (Tegra internal, PMIC and board level I2C RTC)
+  - Ethernet eth0
+  - NAND flash MTD YAFFS2
+  - serial console debug UARTA
+  - high speed serial UARTB and UARTD
+  - I2C via /dev/i2c-X
+  - MMC/SD card, optional 8-bit SDHCI
+  - PWM LEDs /sys/class/leds/
+  - HDMI SPDIF audio
+  - AC97 audio capture, playback and touch
+  - SPI via /dev/spidev3.0
+  - GMI with multiplexed nPWE and RDnWR
+  - framebuffer console
+  - custom Ethernet MAC Address
+  - serial number and board revision
+  - watchdog
+  - USB host port
+  - USB device Ethernet RNDIS, provided by Android gadget
+  - suspend LP1
+  - DVFS power management
+- Android
+  - TFTLCD aka DVI-A with VGA, 800x480 (EDT ET070080DH6), 1024x600 (TouchRev Fusion 10) or 720p
+  - HDMI aka DVI-D 720p display dynamically switching to 1080p for full HD content
+  - MMC/SD card
+  - USB host port
+  - USB keyboard/mouse
+  - USB memory stick
+  - ADB, MTP and USB tethering via USB device aka micro USB port
+  - Ethernet eth0 using DHCP
+  - video playback 720p/1080p
+  - browser
+  - GPIO keys (back using SODIMM pin 133 on Iris X16-14, find 77, home 127, menu 135, power 45 X16-20, volume down 24, up 22)
+  - LP1 suspend (wake-up via back or power key)
+  - resistive touch on 5.7" EDT ET057090DHU (VGA) or 7" ET070080DH6 albeit uncalibrated
+  - multitouch using TouchRev Fusion 10 (reset using SODIMM pin 101 on Iris X16-16 and pen down IRQ SODIMM 103 X16-15)
+  - PWM backlight via regular Android setting
+
+- sources git.toradex.com
+  - U-Boot tag T20_LinuxImageV2.0_20130305
+  - Linux commit 0fc73eb175a82dc11f6c1cc8e03f1d311d3180de
+
+Not working or not tested:
+- U-Boot USB keyboard
+
+Known issues:
+- time needs to be set for download to work
+- while 256MB modules do run fine multimedia capabilities are severely limited
+
+*****************************************************************************************************************************************************************************************
+NAND Boot: Colibri T20 256MB V1.1b (Sample), Colibri T20 512MB V1.1c (Sample), Colibri T20 256MB V1.2a, Colibri T20 512MB V1.2a, Colibri T20 256MB IT V1.2a or Colibri T20 512MB IT V1.2a
+*****************************************************************************************************************************************************************************************
+
+Initial Preparation:
+- download and extract T20_AndroidImage_Vx.yz.tar.bz2 package
+
+Optional Google Apps Installation:
+- download latest gapps-ics-xyz-signed.zip as described on http://wiki.cyanogenmod.org/w/Gapps
+- extract contents of system folder from gapps-ics-xyz-signed.zip into previously extracted rootfs folder
+- e.g. unzip gapps-ics-xyz-signed.zip; sudo cp -pPR system/* rootfs
+
+Optional TFTLCD Resolution Selection:
+- LVDS aka TFTLCD resolution hard-coded in kernel
+- following pre-compiled kernels provided
+  uImage-3.1.10-colibri_t20-android-4.0.4-720p
+  uImage-3.1.10-colibri_t20-android-4.0.4-et070080dh6
+  uImage-3.1.10-colibri_t20-android-4.0.4-fusion10
+  uImage-3.1.10-colibri_t20-android-4.0.4-vga
+- just symlink desired one as follows:
+  cd bin; ln -fs uImage-3.1.10-colibri_t20-android-4.0.4-720p uImage; cd ..
+- separate kernel replacement can be achieved using -k update.sh script option
+
+Flash NAND:
+- EvalBoard V3.1a
+  - connect USB B (X29) or USB micro A/B (X30) to development workstation using regular or micro USB cable
+  - the jumper JP2 must be open
+  - press and hold recovery mode switch (SW9) during power up
+- Iris V1.1a
+  - connect USB micro A/B (X12) to development workstation using regular micro USB cable
+  - short pin 1-2 of JP1 on Iris for RECOVERY
+(other carrier boards see http://developer.toradex.com/knowledge-base/txx-recovery-mode)
+- make sure that the carrier board supports USB high speed
+  - Iris & EvalBoard V3.1a OK, for other carrier boards see http://developer.toradex.com/knowledge-base/usb-2.0-high-speed-%28480mbps%29 )
+- apply power or reset
+- run update.sh script
+- use -r 512 option for 512 MB RAM modules
+- use -v V1_1 option for V1.1b or V1.1c modules
+
+Boot from NAND:
+- EvalBoard V3.1a
+  - do no longer press SW9
+- Iris V1.1a
+  - do no longer short any pins of JP1
+- power cycle
+- upon first boot Java classes are preloaded and cached which takes around 2 minutes, please be patient
+
+Toradex, December 3, 2014

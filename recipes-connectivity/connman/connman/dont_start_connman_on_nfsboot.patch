@@ -1,0 +1,11 @@
+--- git/src/connman.service.in~	2012-10-19 12:42:42.000000000 +0200
++++ git/src/connman.service.in	2012-10-19 12:46:54.616199557 +0200
+@@ -2,6 +2,8 @@
+ Description=Connection service
+ After=syslog.target
+ Before=remote-fs.target
++# only if not NFS mount, connman will disconnect your rootfs otherwise!
++ConditionKernelCommandLine=!root=/dev/nfs
+ 
+ [Service]
+ Type=dbus

@@ -1,0 +1,16 @@
+setenv set_blkcnt 'setexpr blkcnt ${filesize} + 0x1ff && setexpr blkcnt ${blkcnt} / 0x200'
+setenv set_nextnum 'setexpr filenum ${filenum} + 1; setexpr blkstart ${blkstart} + ${blkcnt}'
+
+setenv cp_file_chunk 'tftpboot ${loadaddr} root.ext3-${filenum}; run set_blkcnt; mmc dev 0 0 && mmc write ${loadaddr} ${blkstart} ${blkcnt}'
+setenv update_uboot 'tftpboot ${loadaddr} u-boot.imx && run set_blkcnt && mmc dev 0 0 && mmc write ${loadaddr} 2 ${blkcnt}; patch_ddr_size'
+setenv update_kernel 'tftpboot ${loadaddr} uImage && fatwrite mmc 0:1 ${loadaddr} uImage ${filesize}'
+setenv update_fdt 'tftpboot ${loadaddr} ${fdt_file} && fatwrite mmc 0:1 ${loadaddr} ${fdt_file} ${filesize}'
+setenv update_configblock 'tftpboot ${loadaddr} configblock.bin && run set_blkcnt && mmc dev 0 0 && mmc write ${loadaddr} 0x500 ${blkcnt}'
+setenv update 'run update_1; run update_uboot; run update_2; run update_3; reset'
+setenv update_1 'tftpboot ${loadaddr} mbr.bin && mmc dev 0 0 && mmc write ${loadaddr} 0x0 0x1'
+setenv update_2 'tftpboot ${loadaddr} boot.vfat && run set_blkcnt && mmc dev 0 0 && mmc write ${loadaddr} 0x2000 ${blkcnt}'
+#do it in chunks of 64M to fit into DDR RAM of the smallest module
+#split root.ext3 into multiple 64M chunks before copying to TFTP folder as follows
+#split -a 1 -b `expr 64 \* 1024 \* 1024` -d root.ext3 root.ext3-
+setenv update_3 'setenv filesize 4000000; setenv filenum 0; setenv blkstart a000; while test ${filesize} -eq "4000000"; do run cp_file_chunk; run set_nextnum; done'
+echo 'enter "run update" to update the entire module'

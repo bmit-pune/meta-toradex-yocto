@@ -1,0 +1,518 @@
+******************************************************
+Release Notes:  Linux Image V2.x for Colibri VF50/VF61
+******************************************************
+
+Contents:
+- U-Boot 2015.04 boot loader
+- Linux 4.0.2 kernel
+- Angstrom 2014.12/OpenEmbedded dizzy/Yocto 1.7 based root file system, using
+  LXDE desktop environment
+
+==> Flashing instructions can be found on the Toradex developer article:
+http://developer.toradex.com/knowledge-base/flashing-linux-on-vybrid-modules
+
+********************************************************************************
+Linux Image V2.4 Beta 1 (May 18, 2015)
+- U-Boot:
+  - update to U-Boot 2015.04
+  - new standard NAND ECC format which is able to fix up to 32-errors per page
+  - enable ONFI detection, allows to retrieve more details about the NAND chip
+  - improve NAND read performance by supporting OOB only read
+  - improve NAND write performance by removing unnecessary page reads on write
+  - add generic Toradex config block handling, print exact product description,
+    board revision and serial number to the console
+  - create device-tree properties which make board information available from
+    within Linux userspace through procfs (/proc/device-tree/serial-number,
+    toradex,board-rev and toradex,product-id)
+  - add command to restore Toradex config block ("cfgblock create")
+  - add "bmode" command which allows to select a specific boot device
+  - add display (DCU) support along with some default modes, display the Toradex
+    logo at VGA resolution by default
+  - add GPIO support through "gpio" command
+  - enable USB power for host port explicitly (fixes USB host support on Iris
+    and Viola Carrier Board)
+- Linux kernel:
+  - update to 4.0.2 stable Linux kernel
+  - add audio capture support on Colibri VF61 (AC97)
+  - use configfs for USB Gadget configuration
+  - improve NAND read performance by supporting OOB only read
+  - improve NAND write performance by removing unnecessary page reads on write
+  - export Vybrid SoC information such as ROM revision and unique ID through
+    SoC bus (/sys/devices/soc0/machine, family, soc_id and revision)
+- Linux user-space:
+  - update OpenEmbedded from daisy to dizzy:
+    - glibc 2.20 (instead of eglibc)
+    - systemd 2.18
+    - Xorg 1.14.7
+    - updated various LXDE packages to newer versions
+  - use libusbg to configure USB Gadget through configfs, provides a default
+    configuration which configures a serial connection using CDC ACM protocol
+  - enable a serial console on the tty provided by USB Gadget CDC ACM (ttyGS0
+    on module side, typically ttyACM0 on host side)
+  - replace full NTP daemon with systemd's NTP client only systemd-timesyncd
+  - blacklist USB RNDIS for connman, use systemd-networkd to configure RDNIS
+    network interface (new standard IP of the module is 192.168.11.1!)
+  - enable BusyBox resize command to resize the terminal on serial console
+  - remove e2fsprogs for VF default image (image feature ext2)
+  - fix GPIOConfig CPU detection on Colibri VF50 (GPIOConfig V1.3)
+
+- sources git.toradex.com tag Colibri_VF_LinuxImageV2.4Beta1_20150518
+  - repository linux-toradex branch toradex_vf_4.0
+  - repository u-boot-toradex branch 2015.04-toradex
+
+Note:
+- mount point names changed from /media/<block device name> to /media<label>
+- The kernel requires now the device tree from within the root filesystem to
+  boot. Board customisation within code are for most use cases not necessary.
+  For custom carrier boards, it is recommended to create a customised
+  device tree file and deploy it in the root filesystems /boot directory.
+  U-Boot reads the device tree according to the following name scheme:
+  => ${soc}-colibri-${fdt_board}.dtb
+
+  Hence, a custom carrier board needs to set the fdt_board variable accordingly
+  and would name the device tree files using the SoC prefix depending on the
+  supported module type:
+  => vf500-colibri-mycarrier.dtb
+  => vf610-colibri-mycarrier.dtb
+
+Known Issues:
+- If the module does not boot, remove all displays connected to HSYNC, VSYNC and reset.
+  (This has been observed on an Evaluation Board V2.1C)
+- Downgrade is not possible through "run update" due to NAND ECC layout changes
+  refer to the flashing instruction article to flash the module from scratch
+- Audio capture does not work due to a bug in the device tree
+  http://git.toradex.com/cgit/linux-toradex.git/commit/?h=toradex_vf_4.0-next&id=cc465207c8c1d1c39dd036b851fb8f7e65a5d21b
+
+********************************************************************************
+Linux Image V2.3 Beta 7 (February 03, 2015)
+- U-Boot:
+  - add update using USB flash drives
+  - tolerate up to 12 bit errors on an empty page read
+  - accept raw initramfs images (without mkimage)
+- Linux kernel:
+  - update to 3.18.5 stable Linux kernel
+  - add software AC97 SAI driver to communicate with the Wolfson WM9712
+    AC97 codec for analogue audio playback and resistive touchscreen support
+  - add backlight support with a intermediary PWM duty cycle
+  - add FlexCAN device tree nodes (disabled in the eval-v3 device tree)
+  - add GPIO default pinmux entries for all default GPIO pins (enables export
+    of GPIO's using sysfs for most pins)
+  - enable debug access port which is supported by hw-breakpoint/perf framework
+  - fix boot freeze due to uninitialised DCU layers (observed on Colibri VF50)
+  - fix DSPI driver, use hardware chip select and memory leak
+  - fix several bugs in UART driver when using in DMA as well as interrupt mode
+  - decrease ADC clock to be within specified range, use different sampling
+    settings to avoid issues with temperature sensor
+  - improve pixelclock precision by using a higher DCU input clock
+  - rename GPIO nodes to start with zero (as in the reference manual)
+  - remove wrong touchscreen nodes in common device tree vf-colibri.dtsi
+- Linux user-space:
+  - add new default alsa.conf
+
+- sources git.toradex.com tag Colibri_VF_LinuxImageV2.3Beta7_20150203
+  - repository linux-toradex branch toradex_vf_3.18
+  - repository u-boot-toradex branch 2014.10-toradex
+
+Note:
+- The kernel requires now the device tree from within the root filesystem to
+  boot. Board customisation within code are for most use cases not necessary.
+  For custom carrier boards, it is recommended to create a customised
+  device tree file and deploy it in the root filesystems /boot directory.
+  U-Boot reads the device tree according to the following name scheme:
+  => ${soc}-colibri-${fdt_board}.dtb
+
+  Hence, a custom carrier board needs to set the fdt_board variable accordingly
+  and would name the device tree files using the SoC prefix depending on the
+  supported module type:
+  => vf500-colibri-mycarrier.dtb
+  => vf610-colibri-mycarrier.dtb
+
+Known Issues:
+- If the module does not boot, remove all displays connected to HSYNC, VSYNC and reset.
+  (This has been observed on an Evaluation Board V2.1C)
+- Downgrade does not work with "run setupdate". For downgrade, use
+  mmc rescan && && fatload mmc 0:1 ${loadaddr} flash_mmc.img && source ${loadaddr}
+  instead, then the usual "run update"
+- Boot from SD-card does not work out of the box, sddtbparm net to be updated:
+  setenv sddtbload 'setenv dtbparam; load mmc 0:2 ${fdt_addr_r} \
+		${soc}-colibri-${fdt_board}.dtb && \
+		"/boot/${soc}-colibri-${fdt_board}.dtb && \
+		"setenv dtbparam ${fdt_addr_r}'
+- the USB device Ethernet RNDIS functionality is disabled by default
+
+********************************************************************************
+Linux Image V2.3 Beta 5 (December 19, 2014)
+- U-Boot:
+  - set secondary MAC address (for dual Ethernet carrier boards)
+  - use Thumb2 instruction set which shrinks U-Boot size by about 25%
+  - fix sub-page NAND writes
+  - USB host and device support
+  - USB host: enable mass storage support
+  - USB device: enable DFU support (device firmware upgrade)
+  - USB device: use Toradex VID/PID and specify device serial number
+  - improve evaluation of reset source
+  - switch default console to ttyLP0 (used by mainline kernel)
+- Linux kernel:
+  - switch to vanilla 3.18 based Linux kernel with device tree capabilities
+  - clock handling using the common clock framework. Clocks get enabled only if
+    needed which saves power during runtime as well as sleep.
+  - new GPIO driver including Pinctrl support for muxing/pin settings
+  - ADC support through IIO framework (including reading the temperature sensor)
+  - PWM driver using the PWM framework with sysfs API
+  - UART driver with DMA support, exported as ttyLPX (was ttymxcX)
+  - SD card support including card detect
+  - on-module CAN controller support using FlexCAN driver
+  - USB peripheral and host support (specified in device tree for now)
+  - configurable main clocksource, using ARM Global Timer by default
+  - MSCM driver for interrupt routing between Cortex-A5/Cortex-M4
+  - Multi-Core Communication support updated for use with virtual IRQ numbers
+- Linux user-space:
+  - Update mcc-pingpong buildscript to build with the new kernel
+  - update X server to 1.14.7
+  - /etc/machine-id: ensure it is saved non-volatile
+
+- sources git.toradex.com tag Colibri_VF_LinuxImageV2.3Beta5_20141219
+  - repository linux-toradex branch toradex_vf_3.18
+  - repository u-boot-toradex branch 2014.10-toradex
+
+Note:
+- The kernel requires now the device tree from within the root filesystem to
+  boot. Board customisation within code are for most use cases not necessary.
+  For custom carrier boards, it is recommended to create a customised
+  device tree file and deploy it in the root filesystems /boot directory.
+  U-Boot reads the device tree according to the following name scheme:
+  => ${soc}-colibri-${fdt_board}.dtb
+
+  Hence, a custom carrier board needs to set the fdt_board variable accordingly
+  and would name the device tree files using the SoC prefix depending on the
+  supported module type:
+  => vf500-colibri-mycarrier.dtb
+  => vf610-colibri-mycarrier.dtb
+
+Known Issues:
+- If the module does not boot remove all displays connected to HSYNC, VSYNC and reset.
+  (This has been observed on an Evaluation Board V2.1C)
+- Analogue audio and Touchscreen are not yet working on the Colibri VF61
+- SPI and CAN over SPI (using MCP251x) do not work yet on the new kernel
+- the USB device Ethernet RNDIS functionality is disabled by default
+
+********************************************************************************
+Linux Image V2.3 Beta 3 (October 31, 2014)
+- U-Boot:
+  - update to mainline U-Boot 2014.10 with new partition layout
+  - upstream NAND flash support: faster transfers due to optimised memcpy
+  - improved DDR initialization, according to JEDEC specifications
+  - enable caches in U-Boot
+  - boot zImage kernel from root file system
+  - create environment variable containing SoC type
+  - update environment script to also support device tree based kernels
+  - use PLL1 as DDR clock for Colibri VF50 (keep PLL2 off)
+- Linux kernel:
+  - support SMBus block reads (I2C)
+  - complete I2C resource tables
+  - enable wakealarm feature of SoC RTC to wakeup the system from suspend
+  - compile/deploy in zImage format
+- Linux user-space:
+  - switch to ARMv7 hard-float Thumb2 builds (armv7at2hf-vfp-neon)
+  - updated LXDM to 0.5 with proper systemd-logind support
+  - removed ConsoleKit session/login manager (superseded by systemd-logind)
+  - lxsession shows hibernate button only when kernel support is available
+  - various build and dependency fixes for LXDE recipes
+
+- sources git.toradex.com tag Colibri_VF_LinuxImageV2.3Beta3_20141031
+  - repository linux-toradex branch colibri_vf
+  - repository u-boot-toradex branch 2014.10-toradex
+
+Note:
+- We use now zImage instead of uImage kernel image format and moved the kernel
+  inside the root filesystem. If you use custom U-Boot scripts, you need to
+  alter those scripts accordingly.
+
+Known Issues:
+- If the module does not boot remove all displays connected to HSYNC, VSYNC and reset.
+  (This has been observed on an Evaluation Board V2.1)
+- Analogue audio is not working on the Colibri VF61
+- USB client is not reliable (communication freezes when using RNDIS/g_ether)
+
+********************************************************************************
+Linux Image V2.3 Beta 1 (August 4, 2014)
+- U-Boot
+  - Fix environment offset to match new MTD partition layout
+  - Enable external 32 kHz oscillator for more precise RTC
+  - Use PLL2 as RAM clock which allows correct frequency for VF61
+  - Updated Boot ROM Configuration; boot ROM is now able to skip bad blocks
+  - Add CPU/SoC type detection
+  - Disable automatic boot when using recovery mode
+- Linux kernel:
+  - Add support for CAN (configuration CONFIG_CAN_FLEXCAN need to be enabled)
+  - Updated default configuration for newer systemd variant, removed DVB-T
+    tuners
+  - Added/Fixed PWM support by creating a new driver for FlexTimer
+  - Colibri VF50: Minimum touch pressure to count as touch is now configurable
+    through the parameter "min_pressure"
+- Linux user-space
+  - Update from oe's dora to daisy
+  - Integrate u-boot-fw-utils fw_printenv fw_setenv
+  - Remove machine feed URL, as it does not exist
+  - Only start xinput-calibrator.service when LXDM is enabled
+  - Use X server 1.14.4
+  - Disable openssh's use of reverse DNS
+  - Add unclutter to hide mouse cursor
+  - Disable gvfs samba-client
+  - Remove webkit-gtk dependency on video and OpenGL
+  - Use libpthread for gnutls
+  - Remove gnome-disk-utility
+
+- sources git.toradex.com tag Colibri_VF_LinuxImageV2.3Beta1_20140804
+  - repository linux-toradex branch colibri_vf
+  - repository u-boot-toradex branch 2014.04-toradex
+
+Known Issues:
+- If the module does not boot remove all displays connected to HSYNC, VSYNC and reset.
+  (This has been observed on an Evaluation Board V2.1)
+- Analogue audio is not working on the Colibri VF61
+- USB client is not reliable (communication freezes when using RNDIS/g_ether)
+- The Angstrom-Distribution since switched to using ARM Thumb2 instruction set.
+  To use their binary feeds e.g. using the opkg package manager please change in
+  /etc/opkg/base-feed.conf et. al. armv7ahf-vfp-neon to armv7at2hf-vfp-neon.
+  We consider switching in our next release.
+
+********************************************************************************
+Linux Image V2.2 Beta 1 (June 03, 2014)
+- U-Boot
+  - Update to mainline U-Boot 2014.04 with new partition layout and NAND driver
+    which enables hardware ECC.
+  - Support new config block layout.
+  - Dropped SD card environment support (booting the boot loader from SD card is
+    not possible with fused modules)
+- Linux kernel:
+  - Make use of hardware ECC result when reading from NAND
+    (this breaks backward compatibility, reflash of root filesystem needed)
+  - Clear pending characters from UART when configuring FIFO. This solves boot
+    hang when UART characters are received during startup.
+  - Fix global timer length which makes sure kernel time is monotonic increasing
+  - Add support for second Ethernet (enable with CONFIG_FEC0)
+  - Add support for UART4/UART5 (enable with CONFIG_UART[3|4]_SUPPORT)
+  - Support new pin assignment for VF50 V1.1 and newer
+  - Use chip select for NAND (required for U-Boot 2014.04)
+- Linux user-space
+  - Update GPIO config tool to V1.2
+  - Add mcc-pingpong demo application for communication with Cortex M4 core
+
+- sources git.toradex.com linux/u-boot branches colibri_vf tag Colibri_VF_LinuxImageV2.2Beta1_20140603
+
+Known Issues:
+- If the module does not boot remove all displays connected to HSYNC, VSYNC and reset.
+  (This has been observed on an Evaluation Board V2.1)
+- Analogue audio is not working on the Colibri VF61
+- SSH password authentication is disabled by default (see PasswordAuthentication
+    setting in /etc/ssh/sshd_config)
+- Package management is not active (opkg update/opkg install does not work)
+- USB client is not reliable (communication freezes when using RNDIS/g_ether)
+
+********************************************************************************
+Linux Image V2.1 Beta 3 (March 18, 2014)
+- U-Boot
+  - Add default VESA VGA vidargs for our now modedb enabled kernel. This allows
+    easy specifying an alternate parallel RGB resolution.
+- Linux kernel:
+  - Allow to configure video resolution through modedb (video=dcufb:..).
+  - Add kernel parameters to change RGB clock polarity.
+  - Included reworked Fusion multi-touch touchscreen driver.
+  - Merged Timesys tag 3.0-vybrid-ts2.13.
+  - Support suspend/resume for Micrel PHY.
+  - Enable FIFO for UART even when serial console is enabled.
+  - Enabled wake-up pins SODIMM 43/45.
+  - Fix and enabled SPI support (DSPI1).
+  - Platform data for CAN transceiver MCP251x on Evaluation Board.
+  - Build AC97 driver as module (supports resistive touch only for now).
+  - Add PWM platform data, export PWM channels as PWM LEDs.
+- Linux user-space
+  - GPIO config tool.
+  - Add Cortex M4 utility mqxboot and communication library libmcc.
+
+- sources git.toradex.com linux/u-boot branches colibri_vf tag Colibri_VF_LinuxImageV2.1Beta3_20140318
+
+Known Issues:
+- If the module does not boot remove all displays connected to HSYNC, VSYNC and reset.
+  (This has been observed on an Evaluation Board V2.1)
+- Analogue audio is not working on the Colibri VF61
+- An input on UART_A during bootup can lead to a hang (stuck at "rtc-ds1307 0-0068: hctosys: unable to
+  read the hardware clock"). Make sure UART_A is connected before powering up and not written to.
+
+********************************************************************************
+Linux Image V2.1 Beta 2 (November 29, 2013)
+- U-Boot:
+  - Add initial Colibri VF61 support.
+  - Implement memory size auto detection.
+  - Implement module type (e.g. VF50 vs. VF61) auto detection based on L2 cache availability.
+  - Set specific ARM core clock (e.g. 400 vs. 500 MHz) as well as Linux machine id number.
+  - Rename configuration to colibri_vf to be universally used for Colibri VF50 as well as VF61.
+- Linux kernel:
+  - Various ADC resp. VF50 touch improvements/fixes.
+  - Implement internal temperature sensor exposed via /sys/class/hwmon/hwmon0/device/temp1_input.
+  - Fix VESA VGA display timing.
+  - Use 16 bpp framebuffer by default to avoid buffer underruns.
+  - Add the following additional display timings for manual activation:
+    - 800x480@60 (e.g. EDT ET070080DH6)
+    - 800x600@60
+    - 1024x600@60 (e.g. TouchRevolution Fusion 10)
+    - 1024x768@60
+  - Allow for 396 as well as 500 MHz A5 core frequency.
+  - Add the Colibri VF61 machine id and its corresponding machine definition.
+  - Rename configuration to colibri_vf to be universally used for Colibri VF50 as well as VF61.
+  - Enable watchdog configuration.
+  - Fix Freescale's magic daisy chain aka select input IOMUX stuff.
+  - Fix pixel clock polarity.
+- rootfs / oe-core:
+  - Use branch 'LinuxImageV2.1' in toradex-bsp-platform.git 
+  - Fix recipe to follow the changed khronos headers checksum
+  - Rename machine to colibri-vf to be universally used for Colibri VF50 as well as VF61
+  - Unify files for use with VF50/VF61 or add VF61 specific ones
+  - Don't statically populate /dev. The VFxx console fails on this.
+  - Improve the console and qt4e image recipe
+
+- sources git.toradex.com linux/u-boot branches colibri_vf tag Colibri_VF_LinuxImageV2.1Beta2_20131129
+
+Known Issues:
+- If the module does not boot remove all displays connected to HSYNC, VSYNC and reset.
+  (This has been observed on an Evaluation Board V2.1)
+- LVDS aka TFTLCD resolution hard-coded in kernel to VESA VGA resolution.
+- Resistive touch and analogue audio are not working on a Colibri VF61
+
+********************************************************************************
+Linux Image V2.1 Beta 1 (October 22, 2013)
+- U-Boot:
+  - Fix long standing boot hang issue introduced by Freescale's Vybrid 1.1 silicon.
+  - Fix possible uninitialised array member issue in serial number to
+      hexadecimal coded decimal conversion routine (e.g. as used for
+      /proc/cpuinfo in Linux).
+  - Migrate default NAND vs. SD card boot configuration (in-line with Colibri T20)
+  - Integrate config block handling
+  - Increase the available space for the U-Boot binary to half a megabyte by booting from gfxRAM rather than sysRAM0.
+  - Initial support based off Timesys' implementation for Freescale's Vybrid Tower System TWR-VF65GS10:
+    - New machine ID.
+    - Default UART_A on SCI0.
+    - ESDHC2 only.
+    - 8-bit NAND.
+    - No quad SPI.
+    - FEC1 only.
+    - Enabled command line editing.
+    - PLL5 based RMII clocking (e.g. no external crystal).
+    - UART_A, UART_B and UART_C I/O muxing.
+- Linux kernel:
+  - Hackish USBH_PEN implementation.
+  - Setup memory if mem= is not passed to kernel.
+  - Enable RTS/CTS on UART_A aka UART0 and UART_B aka UART2.
+  - Integrate backlight using both BL_ON GPIO and PWM<A>.
+  - Re-worked IOMUX pin muxing.
+  - Disable magic SysRq key configuration as this is not only a potential
+       security thread but can cause serious trouble if for some reason UART pins
+       are left floating and therefore cause unexpected break conditions.
+  - Decrease DMA zone size configuration.
+  - Enable tmpfs POSIX ACL configuration.
+  - Re-enable L2 cache kernel configuration as it is now only enabled if actually present on chip.
+  - Implement resistive touch screen driver using ADCs and GPIOs.
+  - Add Eon Silicon Solutions manufacturer ID and integrate mxc_nand platform data handling.
+  - Disable NAND controller software ECC in order to use hardware ECC.
+  - Enable ADC driver as well as debugfs file system.
+  - Fix DCU clock rounding, set DCU clock to 150.7 MHz, increase display pin drive strength and
+      configure DCU for VESA VGA with a 30 MHz pixel clock
+  - Enable CPU idle, NEON, ASRC and printk time.
+  - Initial support based off Timesys' implementation for Freescale's Vybrid Tower System TWR-VF65GS10:
+    - New machine ID.
+    - FEC1 only.
+    - ESDHC2 only with card detect interrupt.
+    - PLL5 based RMII clocking (e.g. no external crystal).
+    - VESA VGA display timing (tested with 5.7" EDT ET057090DHU).
+    - Default UART_A on SCI0.
+    - UART_A and UART_C I/O muxing.
+    - I2C real time clock on carrier board.
+    - Early boot console support.
+    - 8-bit NAND.
+- rootfs / oe-core:
+  - OpenEmbedded: layers from dylan
+      xserver version 1.14
+      gtk+ 2.24.15
+      midori 0.5.0
+  - NEON and hard float enabled build
+  - feed-config: use the new feed armv7ahf-vfp-neon
+  - evdev: backport V2.8.1 from dora to get a fix for multitouch events
+  - browser: use midori
+  - burnflash: script for config block generation
+  - systemd-journald: limit journal size
+- sources git.toradex.com linux/u-boot branches colibri_vf tag Colibri_VF50_LinuxImageV2.1Beta1_20131022
+
+Known Issues:
+- LVDS aka TFTLCD resolution hard-coded in kernel to VESA VGA resolution.
+
+********************************************************************************
+Notes:
+- 115200 baud serial debug console on UARTA aka FFUART (lower X25 on EvalBoards resp. X27 on V3.1a depending on JP17/19, X13 on Iris) without any handshake
+- user account: root with empty password
+- UBIFS flash root file system
+- opkg package manager
+
+Working on latest image:
+- U-Boot boot loader
+  - environment storage in NAND flash
+  - Ethernet
+  - MMC/SD cards
+  - NAND flash
+  - RAM size auto detection
+  - serial console debug UARTA
+  - Toradex Colibri configuration block handling
+  - module type auto detection
+  - USB storage as host on USB host port
+  - USB device firmware upgrade (DFU) as device on USB OTG port
+  - framebuffer support
+- Linux kernel
+  - GPIOlib /sys/class/gpio
+  - temperature sensor /sys/bus/iio/devices/iio\:device0/in_temp_input
+  - RTC (Vybrid internal without wakeup support and board level I2C RTC)
+  - Ethernet eth0
+  - NAND flash MTD UBIFS with hardware ECC
+  - serial console debug UARTA ttyLP0
+  - serial UARTA/UARTB and UARTC up to 921600, including RTS/CTS
+  - I2C via /dev/i2c-X
+  - MMC/SD card ESDHC2
+  - PWM /sys/class/pwm/
+  - Colibri VF61: AC97 analogue audio playback and resistive touch
+  - SPI (DSPI) via /dev/spidev1.0
+  - framebuffer console
+  - custom Ethernet MAC address
+  - serial number and board revision
+  - watchdog
+  - USB host port
+  - USB webcam
+  - USB raw HID device /dev/hidrawX
+  - USB device Ethernet RNDIS
+  - USB device CDCACM
+  - analogue inputs /sys/bus/iio/devices/
+  - power management (standby is Stop mode)
+  - interrupt router (peripheral gets routed on interrupt request)
+  - optional CAN (Vybrid SoC internal)
+- Linux user-space
+  - graphics (DCU aka parallel RGB)
+  - Midori browser
+  - GPIO config tool
+  - LXDE
+  - Cortex M4 utility mqxboot
+  - multicore communication library libmcc
+
+Not working or not tested:
+- U-Boot boot loader
+  - USB keyboard
+- Linux kernel
+  - Colibri VF61: AC97 analogue audio capture
+  - USB audio driver
+  - automatic USB device/host detection aka OTG support
+  - IrDA
+  - RS-422/485
+  - optional parallel camera interface
+
+******************************************************************************
+Flashing instruction have been moved to the Toradex developer article:
+http://developer.toradex.com/knowledge-base/flashing-linux-on-vybrid-modules
+
+Toradex, May 22, 2015

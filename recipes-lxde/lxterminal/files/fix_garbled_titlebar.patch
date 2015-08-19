@@ -1,0 +1,11 @@
+--- lxterminal-0.1.11/src/lxterminal.c.orig	2013-04-02 12:58:03.985684096 +0200
++++ lxterminal-0.1.11/src/lxterminal.c	2013-04-02 12:56:58.336136155 +0200
+@@ -1220,7 +1220,7 @@
+         if (visual != NULL)
+             gtk_widget_set_visual(terminal->window, visual);
+     #else
+-        GdkColormap *colormap = gdk_screen_get_rgba_colormap(gtk_widget_get_screen(GTK_WIDGET(terminal->window)));
++        GdkColormap *colormap = gdk_colormap_get_system();
+         if (colormap != NULL)
+             gtk_widget_set_colormap(terminal->window, colormap);
+     #endif

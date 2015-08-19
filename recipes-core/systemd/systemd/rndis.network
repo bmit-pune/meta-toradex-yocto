@@ -1,0 +1,8 @@
+[Match]
+# We use type since device name depends on Kernel version
+# udevadm info --query=property /sys/class/net/usb0
+Type=gadget
+
+[Network]
+Address=192.168.11.1/24
+DHCPServer=yes

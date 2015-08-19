@@ -1,0 +1,22 @@
+If an application on the windows host uses rdesktops serial forwarding
+the SERIAL_GET_PROPERTIES might get called and leads to an error returned.
+
+This patch implements the ioctl without giving back any data, however no
+error state is returned either.
+
+Taken from:
+http://sourceforge.net/p/rdesktop/bugs/372/#20fd
+
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+--- rdesktop-1.8.3/serial.c.orig	2015-01-21 12:46:35.222209021 +0100
++++ rdesktop-1.8.3/serial.c	2015-01-21 12:52:53.739897582 +0100
+@@ -935,6 +935,9 @@
+ 			DEBUG_SERIAL(("serial_ioctl -> SERIAL_SET_XON\n"));
+ 			tcflow(handle, TCION);
+ 			break;
++		case SERIAL_GET_PROPERTIES:
++			DEBUG_SERIAL(("serial_ioctl -> SERIAL_GET_PROPERTIES\n"));
++			break;
+ 		default:
+ 			unimpl("SERIAL IOCTL %d\n", request);
+ 			return RD_STATUS_INVALID_PARAMETER;

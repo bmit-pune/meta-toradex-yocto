@@ -1,0 +1,34 @@
+diff -Naur gnutls-2.12.23.orig/lib/configure.ac gnutls-2.12.23/lib/configure.ac
+--- gnutls-2.12.23.orig/lib/configure.ac	2014-08-01 19:01:35.243966651 +0200
++++ gnutls-2.12.23/lib/configure.ac	2014-08-01 19:01:49.398773492 +0200
+@@ -124,7 +124,18 @@
+ lgl_INIT
+ 
+ AC_CHECK_FUNCS(getrusage,,)
+-AC_LIB_HAVE_LINKFLAGS(pthread,, [#include <pthread.h>], [pthread_mutex_lock (0);])
++
++#hack: the cross compile here thinks libpthread is not available.
++#AC_LIB_HAVE_LINKFLAGS(pthread,, [#include <pthread.h>], [pthread_mutex_lock (0);])
++HAVE_LIBPTHREAD=yes
++LIBPTHREAD=-lpthread
++LTLIBPTHREAD=-lpthread
++LIBPTHREAD_PREFIX=/mnt/sdc2/oe-disk/oe-core_V2.3/build/out-eglibc/sysroots/colibri-t30/usr 
++AC_DEFINE([HAVE_LIBPTHREAD], 1, [Define if you have the $1 library.])
++AC_SUBST([HAVE_LIBPTHREAD])
++AC_SUBST([LIBPTHREAD])
++AC_SUBST([LTLIBPTHREAD])
++AC_SUBST([LIBPTHREAD_PREFIX])
+ 
+ LIBGNUTLS_LIBS="-lgnutls $LIBS"
+ LIBGNUTLS_CFLAGS=""
+diff -Naur gnutls-2.12.23.orig/lib/gnutls_int.h gnutls-2.12.23/lib/gnutls_int.h
+--- gnutls-2.12.23.orig/lib/gnutls_int.h	2012-11-08 17:11:15.000000000 +0100
++++ gnutls-2.12.23/lib/gnutls_int.h	2014-08-01 20:58:48.406146057 +0200
+@@ -28,6 +28,7 @@
+ 
+ #ifdef HAVE_CONFIG_H
+ #include <config.h>
++#include "config.h"
+ #endif
+ 
+ #include <stddef.h>

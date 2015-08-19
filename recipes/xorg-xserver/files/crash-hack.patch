@@ -1,0 +1,11 @@
+--- xorg-server-1.11.2/miext/damage/damage.c~	2011-04-24 06:54:03.000000000 +0200
++++ xorg-server-1.11.2/miext/damage/damage.c	2012-07-27 12:12:00.012473812 +0200
+@@ -596,6 +596,8 @@
+     ScreenPtr		pScreen = pDst->pDrawable->pScreen;
+     PictureScreenPtr	ps = GetPictureScreen(pScreen);
+     damageScrPriv(pScreen);
++    //ugly hack, the xserver crashes when gtk programs use some fancy font rendering, this prevents this
++    maskFormat = 0;
+ 
+     if (checkPictureDamage (pDst))
+     {

@@ -1,0 +1,27 @@
+From cb16656555e6c66fc5aae304f46b9b472bac50aa Mon Sep 17 00:00:00 2001
+From: Anton Khirnov <anton@khirnov.net>
+Date: Thu, 6 Feb 2014 09:45:54 +0100
+Subject: [PATCH 3/5] cap_ffmpeg: wrap a forgotten instance of CODEC_ID_H264 in
+ CV_CODEC()
+
+(cherry picked from commit 614c66d402e260ff4c8ae7eb132d1c498febdeb2)
+---
+ modules/highgui/src/cap_ffmpeg_impl.hpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/highgui/src/cap_ffmpeg_impl.hpp b/modules/highgui/src/cap_ffmpeg_impl.hpp
+index 068642a..e2e3c30 100644
+--- a/modules/highgui/src/cap_ffmpeg_impl.hpp
++++ b/modules/highgui/src/cap_ffmpeg_impl.hpp
+@@ -1119,7 +1119,7 @@ static AVStream *icv_add_video_stream_FFMPEG(AVFormatContext *oc,
+      and qmin since they will be set to reasonable defaults by the libx264
+      preset system. Also, use a crf encode with the default quality rating,
+      this seems easier than finding an appropriate default bitrate. */
+-    if (c->codec_id == CODEC_ID_H264) {
++    if (c->codec_id == CV_CODEC(CODEC_ID_H264)) {
+       c->gop_size = -1;
+       c->qmin = -1;
+       c->bit_rate = 0;
+-- 
+1.9.3
+

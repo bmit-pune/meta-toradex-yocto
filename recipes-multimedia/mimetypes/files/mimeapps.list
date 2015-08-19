@@ -1,0 +1,10 @@
+[Added Associations]
+video/mpeg=gst-launch.desktop;
+video/x-msvideo=gst-launch.desktop;
+video/mp4=gst-launch.desktop;
+video/quicktime=gst-launch.desktop;
+video/x-ms-wmv=gst-launch.desktop;
+video/x-matroska=cd gst-launch.desktop;
+audio/mpeg=gst-launch.desktop;
+audio/basic=aplay.desktop;
+audio/x-wav=aplay.desktop;

@@ -1,0 +1,50 @@
+diff -Naur nvsamples-1.0-r0.orig/nvsamples/make/nvdefs.mk nvsamples-1.0-r0/nvsamples/make/nvdefs.mk
+--- nvsamples/make/nvdefs.mk.orig	2011-12-07 10:22:49.000000000 +0100
++++ nvsamples/make/nvdefs.mk	2012-07-07 12:37:13.000000000 +0200
+@@ -1,4 +1,4 @@
+-NV_TOPDIR  = $(HOME)/nvsamples
++NV_TOPDIR  = $(WORKDIR)/nvsamples
+ NV_PLATFORM_DIR = $(NV_TOPDIR)
+ NV_KERNDIR = $(NV_TOPDIR)/../kernel
+ 
+@@ -42,17 +42,13 @@
+    NV_PLATFORM_CPPFLAGS += -DKD
+ endif
+ 
+-NV_PLATFORM_LDFLAGS   =
++NV_PLATFORM_LDFLAGS   = -L/usr/X11R6.4/lib -lX11 -lICE -lSM
+ 
+ NV_PLATFORM_SDK_INC_DIR = $(NV_TOPDIR)/include
+ NV_PLATFORM_SDK_LIB_DIR = $(NV_TOPDIR)/lib-target
+-ROOTFS_LIB_DIR          = $(NV_TOPDIR)/../T20_LinuxImageV1.0Beta4/rootfs/usr/lib
+ 
+ NV_PLATFORM_SDK_INC   = -I$(NV_PLATFORM_SDK_INC_DIR)
+-NV_PLATFORM_SDK_LIB   = -L$(NV_PLATFORM_SDK_LIB_DIR) \
+-                        -L$(ROOTFS_LIB_DIR) \
+-                        -Xlinker -rpath-link \
+-			-Xlinker $(ROOTFS_LIB_DIR)
++NV_PLATFORM_SDK_LIB   = -L$(NV_PLATFORM_SDK_LIB_DIR) 
+ NV_PLATFORM_OPT       = -Os -O2
+ NV_PLATFORM_MATHLIB   = -lm
+ NV_PLATFORM_THREADLIB = -lpthread
+@@ -80,13 +76,13 @@
+ 
+ # compiler utilities
+ 
+-CROSSBIN = $(NV_TOPDIR)/../arm-2009q3/bin/arm-none-linux-gnueabi-
+-CC     = $(CROSSBIN)gcc
+-CXX    = $(CROSSBIN)g++
+-LD     = $(CROSSBIN)gcc
+-AR     = $(CROSSBIN)ar
+-RANLIB = $(CROSSBIN)ranlib
+-STRIP  = $(CROSSBIN)strip
++CROSSBIN = arm-angstrom-linux-gnueabi-
++CC     ?= $(CROSSBIN)gcc
++CXX    ?= $(CROSSBIN)g++
++LD     = $(CC)
++AR     ?= $(CROSSBIN)ar
++RANLIB ?= $(CROSSBIN)ranlib
++STRIP  ?= $(CROSSBIN)strip
+ 
+ NV_CGDIR = $(NV_TOPDIR)/utils/Cg
+ HEXIFY   = $(NV_CGDIR)/hexify.pl

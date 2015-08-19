@@ -1,0 +1,93 @@
+diff -Naur nvsamples.orig/make/nvdefs.mk nvsamples/make/nvdefs.mk
+--- nvsamples.orig/make/nvdefs.mk	2012-09-10 19:16:45.299731097 +0200
++++ nvsamples/make/nvdefs.mk	2012-09-24 19:41:40.659811178 +0200
+@@ -86,7 +86,8 @@
+ 
+ NV_CGDIR = $(NV_TOPDIR)/utils/Cg
+ HEXIFY   = $(NV_CGDIR)/hexify.pl
+-CGC      = $(NV_CGDIR)/$(NV_HOST_OSTYPE)/cgc -quiet
++#prevent binary shaders, the L4T OpenGL drivers do not support them
++#CGC      = $(NV_CGDIR)/$(NV_HOST_OSTYPE)/cgc -quiet
+ SHADER_FIX = $(NV_CGDIR)/$(NV_HOST_OSTYPE)/shaderfix
+ CGC_CG   = $(CGC)
+ CGC_GLSL = $(CGC) -ogles
+@@ -124,3 +127,10 @@
+ 	$(CGC_CG_FRG) -o $*.tmp $<
+ 	$(SHADER_FIX) -o $@ $*.tmp
+ 	rm -rf $*.tmp
++
++#deploy source shaders in headerfiles
++%.hglslv: %.glslv
++	$(HEXIFY) $< $@
++
++%.hglslf: %.glslf
++	$(HEXIFY) $< $@
+ 
+diff -Naur nvsamples.orig/samples/opengles2/bubble/shaders.c nvsamples/samples/opengles2/bubble/shaders.c
+--- nvsamples.orig/samples/opengles2/bubble/shaders.c	2011-05-04 13:36:25.000000000 +0200
++++ nvsamples/samples/opengles2/bubble/shaders.c	2012-10-16 14:17:57.593654157 +0200
+@@ -88,16 +88,16 @@
+     // Otherwise, load and compile the shader sources
+     prog_bubble =
+         NvGl2DemoLoadShaderSources(
+-            "bubble_vert.glslv", "bubble_frag.glslf", GL_FALSE);
++            "shaders/bubble_vert.glslv", "shaders/bubble_frag.glslf", GL_FALSE);
+     prog_mesh =
+         NvGl2DemoLoadShaderSources(
+-            "mesh_vert.glslv", "mesh_frag.glslf", GL_FALSE);
++            "shaders/mesh_vert.glslv", "shaders/mesh_frag.glslf", GL_FALSE);
+     prog_cube =
+         NvGl2DemoLoadShaderSources(
+-            "envCube_vert.glslv", "envCube_frag.glslf", GL_FALSE);
++            "shaders/envCube_vert.glslv", "shaders/envCube_frag.glslf", GL_FALSE);
+     prog_mouse =
+         NvGl2DemoLoadShaderSources(
+-            "mouse_vert.glslv", "mouse_frag.glslf", GL_FALSE);
++            "shaders/mouse_vert.glslv", "shaders/mouse_frag.glslf", GL_FALSE);
+ #   endif
+ 
+     success = prog_bubble && prog_mesh && prog_cube && prog_mouse;
+diff -Naur nvsamples.orig/samples/opengles2/ctree/shaders.c nvsamples/samples/opengles2/ctree/shaders.c
+--- nvsamples.orig/samples/opengles2/ctree/shaders.c	2011-05-04 13:36:26.000000000 +0200
++++ nvsamples/samples/opengles2/ctree/shaders.c	2012-10-16 14:17:16.193651084 +0200
+@@ -130,22 +130,22 @@
+     // Otherwise, load and compile the shader sources
+     prog_solids =
+         NvGl2DemoLoadShaderSources(
+-            "lighting_vert.glslv", "solids_frag.glslf", GL_FALSE);
++            "shaders/lighting_vert.glslv", "shaders/solids_frag.glslf", GL_FALSE);
+     prog_leaves =
+         NvGl2DemoLoadShaderSources(
+-            "lighting_vert.glslv", "leaves_frag.glslf", GL_FALSE);
++            "shaders/lighting_vert.glslv", "shaders/leaves_frag.glslf", GL_FALSE);
+     prog_simplecol =
+         NvGl2DemoLoadShaderSources(
+-            "simplecol_vert.glslv", "simplecol_frag.glslf", GL_FALSE);
++            "shaders/simplecol_vert.glslv", "shaders/simplecol_frag.glslf", GL_FALSE);
+     prog_simpletex =
+         NvGl2DemoLoadShaderSources(
+-            "simpletex_vert.glslv", "simpletex_frag.glslf", GL_FALSE);
++            "shaders/simpletex_vert.glslv", "shaders/simpletex_frag.glslf", GL_FALSE);
+     prog_overlaycol =
+         NvGl2DemoLoadShaderSources(
+-            "overlaycol_vert.glslv", "overlaycol_frag.glslf", GL_FALSE);
++            "shaders/overlaycol_vert.glslv", "shaders/overlaycol_frag.glslf", GL_FALSE);
+     prog_overlaytex =
+         NvGl2DemoLoadShaderSources(
+-            "overlaytex_vert.glslv", "overlaytex_frag.glslf", GL_FALSE);
++            "shaders/overlaytex_vert.glslv", "shaders/overlaytex_frag.glslf", GL_FALSE);
+ #   endif
+     success =  prog_solids && prog_leaves
+             && prog_simplecol  && prog_simpletex
+diff -Naur nvsamples.orig/samples/opengles2/gears/gears.c nvsamples/samples/opengles2/gears/gears.c
+--- nvsamples.orig/samples/opengles2/gears/gears.c	2011-05-04 13:36:27.000000000 +0200
++++ nvsamples/samples/opengles2/gears/gears.c	2012-10-16 14:14:51.433680786 +0200
+@@ -393,7 +393,7 @@
+     // Otherwise, load and compile the shader source
+     gearShaderProgram =
+         NvGl2DemoLoadShaderSources(
+-            "gears_vert.glslv", "gears_frag.glslf", GL_FALSE);
++            "shaders/gears_vert.glslv", "shaders/gears_frag.glslf", GL_FALSE);
+ #   endif
+ 
+     // Use the program we just loaded

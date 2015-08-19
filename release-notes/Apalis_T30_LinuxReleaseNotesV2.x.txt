@@ -1,0 +1,616 @@
+***********************************************
+Release Notes:  Linux Image V2.x for Apalis T30
+***********************************************
+
+Contents:
+- U-Boot 2015.04 boot loader
+- Linux 3.1.10 kernel, based on NVIDIA's Linux for Tegra (L4T) release R16.5
+- Angstrom 2014.12/OpenEmbedded dizzy/Yocto 1.7 based root file system, using
+  LXDE desktop environment
+
+==> Flashing instructions can be found at the very bottom of this release notes
+
+Licensing:
+- proprietary multimedia codecs included for evaluation purpose only
+- customer required to obtain proper re-distribution license
+
+********************************************************************************
+Linux Image V2.4 Beta 1 (May 18, 2015)
+- U-Boot:
+  - update to U-Boot 2015.04
+  - add generic Toradex config block handling, print exact product description,
+    board revision and serial number to the console
+  - add command to restore Toradex config block ("cfgblock create")
+  - optionally create device-tree properties which make board information
+    available from within Linux userspace through procfs (/proc/device-tree/
+    serial-number, toradex,board-rev and toradex,product-id)
+- Linux kernel:
+  - integrate NVIDIA L4T R16.5
+  - optional ADV7280 analogue video decoder support
+  - fix eMMC issues by retrying commands up to 10 times
+  - fix MIPI CSI-2 camera driver
+  - media: fix work of analog cameras
+  - enable module versioning support
+  - update Intel IGB gigabit Ethernet driver to version 5.2.17:
+    - fix ethtool EEE speed advertisement changes
+    - various PTP fixes
+    - errata fix for flashless i210/i211 designs (Errata 25)
+    - add workaround for flashless i210 device support
+  - initial support for IT modules
+  - enable optional AHCI/SATA driver module
+  - fix/improve optional 1-wire driver
+  - SPI driver fix number of words in transfer
+  - cleaned-up module configuration/deployment
+  - SGTL5000 analogue audio codec driver improvements
+- Linux user-space:
+  - update OpenEmbedded from daisy to dizzy:
+    - glibc 2.20 (instead of eglibc)
+    - systemd 2.18
+    - Xorg 1.14.7
+    - updated various LXDE packages to newer versions
+  - libgstomx fix to validate input frame rate
+  - build tegrarcm using static cryptopp library to avoid issues e.g. on 64-bit
+    Fedora
+  - replace full NTP daemon with systemd's NTP client only systemd-timesyncd
+  - blacklist USB RNDIS for connman, use systemd-networkd to configure RDNIS
+    network interface (new standard IP of the module is 192.168.11.1!)
+  - enable BusyBox resize command to resize the terminal on serial console
+  - optionally deploy device-tree
+
+- sources git.toradex.com tag Apalis_T30_LinuxImageV2.4Beta1_20150518
+  - repository linux-toradex branch tegra
+  - repository u-boot-toradex branch 2015.04-toradex
+
+Note:
+- mount point names changed from /media/<block device name> to /media<label>
+
+Known Issues:
+- connecting an analogue mic to the on module codec resets the codec, so that
+    neither headphone out nor mic in works anymore. Workaround: Have mic
+    connected before boot or change the output source between DAC/LineIn
+- on first boot the resizing process adversely affects system performance for
+    the first few minutes until completed
+- flash_eth.img requires manual splitting of the root.ext3 file.
+    see the apalis-t30_bin/flash_eth.scr script
+- SATA drives not mounted automatically
+    workaround 1: click its icon in the file manager
+    workaround 2: mkdir <mountpoint>; mount /dev/<sata partition> <mountpoint>
+- LP1 suspend might fail due to pending USB interrupts
+- LP1 suspend might hang due to display controller issue
+
+********************************************************************************
+Linux Image V2.3 Beta 5 (December 19, 2014)
+- U-Boot:
+  - no changes
+- Linux kernel:
+  - ADV7180 analogue video decoder as found on ACA (formerly ACM) now works at
+      25 fps
+  - fix wake-up-key (formerly power-key)
+  - implement optional force off GPIO support
+  - implement power button optionally acting as power-key
+  - fix HDMI display controller disable state
+  - fix pixel clock polarity
+  - fix USB low-speed issue hack
+  - optional MMC UHS support (enable using mmc_uhs=1 kernel command line
+      parameter, requires V1.1A or later HW)
+- Linux user-space:
+  - fix 32-bit build of our bsp/devtools (e.g. cbootimage/tegrarcm)
+  - fix fw_setenv
+  - fix resizefs
+  - integrate NVIDIA L4T R16.5 (fixes gstreamer memory leak)
+  - add eglinfo application
+  - update X server to 1.14.7 (fixes broken X server rotation)
+  - don't check last mounttime on superblock
+  - /etc/machine-id: ensure it is saved non-volatile
+- Update script
+  - reduce rootfs partition size in the MBR to the available eMMC size
+      to have a valid MBR
+  - fix flash_eth update scripts
+
+- sources git.toradex.com tag Apalis_T30_LinuxImageV2.3Beta5_20141219
+  - repository linux-toradex branch tegra
+  - repository u-boot-toradex branch 2014.10-toradex
+
+Known Issues:
+- connecting an analogue mic to the on module codec resets the codec, so that
+    neither headphone out nor mic in works anymore. Workaround: Have mic
+    connected before boot or change the output source between DAC/LineIn
+- on first boot the resizing process adversely affects system performance for
+    the first few minutes until completed
+- LP1 suspend might fail due to pending USB interrupts
+- LP1 suspend might hang due to display controller issue
+
+********************************************************************************
+Linux Image V2.3 Beta 3 (October 31, 2014)
+- U-Boot:
+  - update to mainline U-Boot 2014.10 with new partition layout and
+      cbootimage/tegrarcm based update concept
+  - gigabit Ethernet over PCIe support for NFS boot functionality
+  - common config block code
+  - fw_printenv integration
+- Linux kernel:
+  - various analogue audio codec fixes/improvements noteworthy driver probe after reset
+  - mark host as eMMC CMD23 capable to force using reliable write command
+  - fix audio hub lock-up
+  - prevent null pointer dereference in Tegra nvmap video driver
+- Linux user-space:
+  - switch to ARMv7 hard-float Thumb2 builds (armv7at2hf-vfp-neon)
+  - add cbootimage, libcryptopp and tegrarcm recipes
+  - use latest u-boot git migrated to cbootimage/tegrarcm
+  - fix noisy analogue audio playback
+  - introduce and deploy fw_printenv/setenv
+  - updated LXDM to 0.5 with proper systemd-logind support
+  - removed ConsoleKit session/login manager (superseded by systemd-logind)
+  - lxsession shows hibernate button only when kernel support is available
+  - various build and dependency fixes for LXDE recipes
+
+- sources git.toradex.com tag Apalis_T30_LinuxImageV2.3Beta3_20141031
+  - repository linux-toradex branch tegra
+  - repository u-boot-toradex branch 2014.10-toradex
+
+Note:
+- As we no longer rely on proprietary Fastboot/NvFlash for flashing the
+  instructions at the very bottom of this release notes changed.
+
+Known Issues:
+- connecting an analogue mic to the on module codec resets the codec, so that
+    neither headphone out nor mic in works anymore. Workaround: Have mic
+    connected before boot or change the output source between DAC/LineIn
+- certain low-speed USB devices might not get detected
+- LP1 suspend might fail due to pending USB interrupts
+- LP1 suspend might hang due to display controller issue
+- partition resizing on first boot not working
+    Change the script /usr/sbin/resizefs.sh and then run the script to have 
+    it work for you:
+    PART="mmcblk0p1" -> PART="mmcblk0p2"
+- fw_setenv not working
+- due to the flash_eth.img update script currently being broken please use the
+    SD card flashing method (e.g. flash_mmc.img) for now
+
+********************************************************************************
+Linux Image V2.3 Beta 2 (September 3, 2014)
+- Linux kernel:
+  - Add a mapping for H.264 payloads to the UVC aka USB webcam driver
+  - Fix PCIe boot-up issue by not disabling clock after deasserting the resets
+- Linux user-space
+  - Update imlib2 to 1.4.6 and use git instead of subversion repo
+
+- sources git.toradex.com tag Apalis_T30_LinuxImageV2.3Beta2_20140903
+  - repository linux-toradex branch tegra
+  - repository u-boot-toradex branch colibri
+
+Known Issues:
+- LP1 suspend might fail due to pending USB interrupts
+- LP1 suspend might hang due to display controller issue
+- The Angstrom-Distribution since switched to using ARM Thumb2 instruction set.
+  To use their binary feeds e.g. using the opkg package manager please change in
+  /etc/opkg/base-feed.conf et. al. armv7ahf-vfp-neon to armv7at2hf-vfp-neon.
+  We consider switching in our next release.
+
+********************************************************************************
+Linux Image V2.3 Beta 1 (August 4, 2014)
+- U-Boot
+  - Fix USB device enumeration problem
+  - Fix out-of-tree build
+- Linux kernel:
+  - Integrate Intel gigabit Ethernet igb driver 5.1.2
+  - No NVM and Ethernet MAC address handling
+  - IEEE 1588 PTP support
+  - Optional CSI2 camera support
+  - Fix locking in BERR counter functionality of MCP251x CAN driver
+  - Disable DC when frame buffer off detected
+  - Add SPI controller platform data for hardware chip select
+  - Fix PCIe clock and reset conform to specification
+  - Use 1.8V MMC/SD quirk only on affected instances
+  - Retry eMMC transfers if aborted due to argument out of range
+  - Fix issue with slow SPDIF clock
+  - Enable CONFIG_FHANDLE required for later systemd
+  - Swap on-board vs. HDA sound card order
+  - Remove synchronize_rcu() from cgroup_attach_{task|proc}() to speed-up systemd boot-up
+  - Enable VLAN functionality
+  - Fix memset-related crashes caused by recent GCC (4.7.2) optimisations
+- Linux user-space
+  - Update from oe's dylan to daisy
+  - Add ptpd for IEEE 1588
+  - Fix comments in xorg.conf files
+  - Provide the khronos headers locally
+  - Replace "eglplatform.h" file
+  - Prefer using EGL GLES from toradex-nv-binaries package
+  - Remove machine feed URL, as it does not exist
+  - Only start xinput-calibrator.service when LXDM is enabled
+  - Use X server 1.14.4
+  - Disable openssh's use of reverse DNS
+  - Add gstreamer-rtp-manager and unclutter
+  - Update GPIO config tool to V1.2 including MXM3 pin descriptions
+
+- sources git.toradex.com tag Apalis_T30_LinuxImageV2.3Beta1_20140804
+  - repository linux-toradex branch tegra
+  - repository u-boot-toradex branch colibri
+
+Known Issues:
+- LP1 suspend might fail due to pending USB interrupts
+- LP1 suspend might hang due to display controller issue
+- The Angstrom-Distribution since switched to using ARM Thumb2 instruction set.
+  To use their binary feeds e.g. using the opkg package manager please change in
+  /etc/opkg/base-feed.conf et. al. armv7ahf-vfp-neon to armv7at2hf-vfp-neon.
+  We consider switching in our next release.
+
+********************************************************************************
+Linux Image V2.1 Beta 3 (March 18, 2014)
+- U-Boot:
+  - Enable hardware boot partition support (via 'mmc dev [dev] [part]' command).
+  - Get rid of the spurious 'video=tegrafb' kernel boot argument and add
+    'noatime' to the usbargs.
+- Linux kernel:
+  - Initialise high speed UART with lower default baudrate to avoid issues.
+  - Merge with NVIDIA's latest L4T R16.4 kernel.
+  - Fix the disabling of PCIe GEN2 capabilities.
+  - Added OmniVision OV7670 and Texas Instruments TVP5150 V4L2 drivers.
+  - Added initial Aptina AS0260 V4L2 driver.
+  - Solved low framerate issue with analogue cameras.
+- rootfs / oe-core:
+  - nv-binaries: update to L4T R16.4
+  - Added gst-plugins-good-jpeg
+- sources git.toradex.com tag Apalis_T30_LinuxImageV2.1Beta3_20140318
+
+Known Issues:
+- connecting an analogue mic to the on module codec resets the codec, so that
+    neither headphone out nor mic in works anymore. Workaround: Have mic
+    connected before boot or change the output source between DAC/LineIn
+- certain low-speed USB devices might not get detected
+- on first boot the resizing process adversely affects system performance for
+    the first few minutes until completed
+
+********************************************************************************
+Linux Image V2.1 Beta 2 (February 6, 2014)
+- U-Boot:
+  - Add more UART configurations to the device trees allowing easy switching of
+    the console UART port by changing the UART base address of the console node
+    within the device tree.
+  - Fix EHCI periodic list handling.
+  - Add default VESA VGA vidargs for our now modedb enabled kernel. This allows
+    easy specifying an alternate parallel RGB resolution.
+  - Fix usbboot option to be more in-line with how we do optional MMC/SD card
+    boot on Colibri VF50/VF61. Loads the uimage kernel from the first partition
+    being formatted as VFAT and instructs the kernel to mount the second
+    partition formatted as ext3 as root file system.
+- Linux kernel:
+  - Use TPS6591X IRQ base define to calculate correct IRQ number.
+  - Remove vdd_hdmi_con regulator from dc1 since we don't have a dedicated
+    regulator for this connector on our baseboards.
+  - Fix SATA suspend/resume by adding avdd_plle regulator.
+  - Fix HDMI suspend/resume by avoiding division by zero oops.
+  - Add GPIO keyboard configuration.
+  - Use integer for root_bus_nr in Tegra PCIe driver.
+  - Add STMPE ADC driver using IIO framework
+    (see http://developer.toradex.com/knowledge-base/adc-(linux)).
+  - Use modedb to specify framebuffer resolution (see
+    http://developer.toradex.com/knowledge-base/framebuffer-(linux) and
+    http://developer.toradex.com/knowledge-base/x-server-(linux)).
+  - Check null pointers for sysfs calls.
+  - Hack to avoid 24 Hz mode in X resulting in no display at all. This has been
+    encountered using e.g. a Samsung SyncMaster F2380 if connected by HDMI.
+  - Add kernel parameters to change RGB clock polarity.
+  - Re-work Fusion multi-touch touchscreen driver.
+  - Before updating modes on HDMI hotplug, check if framebuffer is registered
+    at all. This allows to disable framebuffers completely.
+- rootfs / oe-core:
+  - Fix build and texinfo errors for stress.
+  - Add sections for both monitor outputs to xorg.conf. Add example
+    configuration to disable an output as well as select preferred mode.
+  - Add entry for fusion touchscreen driver to xorg.conf.
+  - Add fstrim from util-linux.
+  - Add kernel module for fusion touch screens (see
+      http://developer.toradex.com/knowledge-base/capacitive-multi-touch-display-(linux)).
+  - burnflash: Account for fs overhead and many files.
+- sources git.toradex.com tag Apalis_T30_LinuxImageV2.1Beta2_20140206
+
+Known Issues:
+- connecting an analogue mic to the on module codec resets the codec, so that 
+    neither headphone out nor mic in works anymore. Workaround: Have mic 
+    connected before boot or change the output source between DAC/LineIn
+- certain low-speed USB devices might not get detected
+- on first boot the resizing process adversely affects system performance for 
+    the first few minutes until completed
+
+********************************************************************************
+Linux Image V2.1 Beta 1 (October 22, 2013)
+- U-Boot:
+  - Fix possible uninitialised array member issue in serial number to
+      hexadecimal coded decimal conversion routine (e.g. as used for
+      /proc/cpuinfo in Linux).
+  - Fix Linux USB OTG1 behaviour by not enabling USBO1_EN during
+      boot as USB host functionality on OTG1 port is anyway broken under U-Boot.
+- Linux kernel:
+  - Fix several HDMI hang issues.
+  - Exported Apalis GPIOs via SYSFS (see /sys/class/gpio).
+  - Support default watchdog API (see
+      http://developer.toradex.com/knowledge-base/watchdog-(linux)).
+  - Disable magic SysRq key configuration as this is not only a potential
+       security thread but can cause serious trouble if for some reason UART
+	   pins are left floating and therefore cause unexpected break conditions.
+  - HDMI: Retry EDID reads up to 4 times until failing.
+
+- rootfs / oe-core:
+  - OpenEmbedded: layers updated to dylan
+      xserver update to version 1.14
+      gtk+ updated to 2.24.15
+      firefox update to 10.0.11esr
+      connman now has a command line tool, connmanctl
+      split the meta-lxde layer from oe-tworaz and serve it from
+        git.toradex.com
+  - NEON enabled build
+  - hdmi: add udev rule to start an X output on hotplug
+  - feed-config: use the new feed armv7ahf-vfp-neon
+  - evdev: backport V2.8.1 from dora to get a fix for multitouch events
+  - burnflash: script for configblock generation
+  - added packages: ethtool
+  - burnflash: add sanity checks
+
+- sources git.toradex.com tag Apalis_T30_LinuxImageV2.1Beta1_20131022
+
+Known Issues:
+- LVDS aka TFTLCD resolution hard-coded in kernel to full HD resolution, 
+    comments with timings for other resolutions provided
+- connecting an analogue mic to the on module codec resets the codec, so that 
+    neither headphone out nor mic in works anymore. Workaround: Have mic 
+    connected before boot or change the output source between DAC/LineIn
+- certain low-speed USB devices might not get detected
+- on first boot the resizing process adversely affects system performance for 
+    the first few minutes until completed
+
+********************************************************************************
+Linux Image V2.0 Beta 2 (August 19, 2013)
+This updates u-boot and kernel to cope with the increased eMMC and changed T30
+CPU SKU on Apalis T30 - 2GB V1.0c, Apalis T30 - 1GB V1.0a
+- U-Boot:
+  - eMMC and RAM size / offset detection
+  - rename shell prompt to Apalis T30
+- Linux kernel:
+  - workaround limited CPU clock
+  - provision for the Analogue Camera Module
+  - v4l kernel drivers configured as kernel modules
+- rootfs / oe-core:
+  - update to latest git revision for kernel and u-boot
+  - image added relevant v4l kernel modules plus v4l-utils
+
+- sources git.toradex.com tag Apalis_T30_LinuxImageV2.0Beta2_20130816
+
+Known Issues:
+- We are in an early Beta state, not all functions are tested.
+- If a a monitor is connected to DVI, the kernel sometime hangs when the 
+  display controller DC1 is initialised. -> reboot required. 
+- LVDS aka TFTLCD resolution hard-coded in kernel to full HD resolution, 
+  comments with timings for other resolutions provided
+- lxappearance is segfaulting upon start
+- connecting an analogue mic to the on module codec resets the codec, so that 
+  neither headphone out nor mic in works anymore. Workaround: Have mic 
+  connected before boot or change the output source between DAC/LineIn
+- certain low-speed USB devices might not get detected
+- on first boot the resizing process adversely affects system performance for 
+  the first few minutes until completed
+
+********************************************************************************
+Linux Image V2.0 Beta 1 (June 26, 2013)
+- U-Boot:
+  - initial integration
+  - integrate NVIDIA partition table parsing incl. Toradex Apalis configuration
+      block
+  - adjust available amount of memory
+  - activate DVI-D framebuffer console
+  - increase CPU frequency at boot
+  - decrease boot delay
+  - fix overflow in HCD conversion
+- Linux kernel:
+  - hack to make newer SD cards work by adding a quirk for lack of 1.8v support
+  - revise Ethernet MAC address assignment
+  - fix PCIe AXI response decoding errors
+  - fix PCIe reset issue
+  - remove spurious tegra_aes_device
+  - video4linux adv7180 and max9526 integration
+  - fix PCIe by forcing GEN1 speed
+  - set board local critical temperature to 95°C
+  - hack to avoid 24 Hz mode in X resulting in no display at all
+  - silence extensive HDMI HDA audio messages
+- rootfs / oe-core:
+  - update to latest git revision for kernel and u-boot
+  - extend rootfs partition on eMMC to its full partition size on first boot
+  - unified update procedure for all T20/T30
+  - limit journal size
+  - nv-binaries: update to L4T R16.3
+  - added packages: gstreamer deinterlacer, scrot
+  - lxterminal, florence: fix garbled titlebar
+
+- sources git.toradex.com tag Apalis_T30_LinuxImageV2.0Beta1_20130626
+
+Known Issues:
+- We are in an early Beta state, not all functions are tested.
+- If a a monitor is connected to DVI, the kernel sometime hangs when the 
+  display controller DC1 is initialised. -> reboot required. 
+- LVDS aka TFTLCD resolution hard-coded in kernel to full HD resolution, 
+  comments with timings for other resolutions provided
+- lxappearance is segfaulting upon start
+- connecting an analogue mic to the on module codec resets the codec, so that 
+  neither headphone out nor mic in works anymore. Workaround: Have mic 
+  connected before boot or change the output source between DAC/LineIn
+- certain low-speed USB devices might not get detected
+- on first boot the resizing process adversely affects system performance for 
+  the first few minutes until completed
+
+********************************************************************************
+Linux Image V2.0 Alpha 1 (March 15, 2013)
+(ported form the Linux Image V2.0 Beta1 for Colibri T30)
+- U-Boot:
+  - first release
+- Linux kernel:
+  - first release
+- oe-core:
+  - first release
+- sources git.toradex.com tag Apalis_T30_LinuxImageV2.0Alpha1_20130315
+
+Known Issues:
+- We are in an early Alpha state, not all functions are tested.
+- If a a monitor is connected to DVI, the kernel sometime hangs when the 
+  display controller DC1 is initialised. -> reboot required. 
+- LVDS aka TFTLCD resolution hard-coded in kernel to full HD resolution, 
+  comments with timings for other resolutions provided
+- some windows have garbled titlebar, e.g. lxterminal
+- lxappearance is segfaulting upon start
+- Gigabit Ethernet MAC address hard-coded to 00:0e:c6:87:72:01
+- stability issues on concurrent PCIe and SATA stress testing
+- connecting an analog mic to the on module codec resets the codec, so that 
+  neither headphone out nor mic in works anymore. Workaround: Have mic 
+  connected before boot or change the output source between DAC/LineIn
+
+********************************************************************************
+Notes:
+- 115200 baud serial debug console on UARTA aka UART1 (EvalBoard lower X28 resp.
+    X29 depending on JP10/12, X22 on Ixora) without any handshake
+- user account: root with empty password
+- eMMC: partition 1: vfat with kernel, partition 2 ext3 root file system
+- opkg package manager
+- HDMI aka DVI-D: not all pixel clock frequencies allow for HDMI audio
+- CRT: the T30 internal video DAC output is unsupported by NVIDIA's L4T Linux
+    SW stack
+- Linux host used for update preparation requires proper 32-bit execution
+    environment (e.g. install ia32-libs on 64-bit Ubuntu), awk and libusb
+    (e.g. install gawk and libusb-1.0-0 on Ubuntu)
+
+Working on latest image:
+- U-Boot boot loader
+  - environment storage in eMMC
+  - Gigabit Ethernet
+  - MMC/SD cards
+  - eMMC flash
+  - RAM size auto detection
+  - serial console debug UARTA aka UART1
+  - Toradex Apalis configuration block handling
+  - USB storage as host on USB host ports
+  - USB device firmware upgrade (DFU) and USB mass storage (UMS) as device on USB OTG1 port
+- Linux kernel
+  - GPIOlib /sys/class/gpio
+  - temperature sensor /sys/bus/i2c/devices/4-004c
+  - RTC (Tegra internal, PMIC and board level I2C RTC)
+  - Gigabit Ethernet enpXs0, X being its PCIe bus number
+  - eMMC ext3
+  - serial console debug UARTA aka UART1 ttyS0
+  - high speed serial UARTB aka UART3, UARTC aka UART4 and UARTD aka UART2 ttyHSX
+  - I2C via /dev/i2c-X
+  - 8-bit MMC card mmc1
+  - 4-bit SD card mmc2
+  - PWM LEDs /sys/class/leds/
+  - HDMI HDA audio
+  - HDA audio (on Eval Board V1.0a: check datasheet/schematics for patch
+      instructions)
+  - analogue audio capture, playback and resistive touch
+    - audio noise is high, workaround is to set headphone volume to maximum and use the DAC volume
+    - touch has some jitter
+  - SPI via /dev/spidev0.0 aka SPI1 and /dev/spidev4.2 aka SPI2
+  - framebuffer console
+  - custom Ethernet MAC address
+  - serial number and board revision
+  - watchdog
+  - USB host port
+  - USB audio driver
+  - USB webcam
+  - USB raw HID device /dev/hidrawX
+  - USB device Ethernet RNDIS, provided by Android gadget
+  - automatic USB device/host/suspend detection aka full OTG support
+  - analogue input
+  - CAN via can0 and can1
+  - PCIe (regular ports and mini-PCIe slot)
+  - SATA (regular port or mSATA slot)
+  - DVFS power management
+  - parallel camera interface
+  - optional CSI2 camera interface
+- Linux user-space
+  - graphics (LVDS-1 aka TFTLCD and HDMI-1 aka DVI-D)
+  - tegrastats
+  - Firefox browser
+  - Gstreamer video encode and playback, independent dual full HD video decode
+  - GPIO config tool
+  - LXDE
+  - tegrastats-gtk, CPU information visible in graphical environment
+  - LVDS transmitter configuration (see lvds-dual-channel.sh resp. lvds-single-channel.sh)
+
+Not working or not tested:
+- U-Boot boot loader
+  - U-Boot USB keyboard
+  - TFTLCD framebuffer support
+- Linux kernel
+  - IrDA
+  - RS-422/485
+  - SIM card
+  - suspend LP1 (igb/PCIe failing)
+- Linux user-space
+  - Adobe Flash not provided by L4T (and probably never will)
+
+***********************************************************************
+eMMC Boot: Apalis T30 1GB V1.0a and V1.1a (Sample)
+eMMC Boot: Apalis T30 2GB V1.0a, V1.0b, V1.0c, V1.0e and V1.1a (Sample)
+***********************************************************************
+
+Initial Preparation:
+- download and extract Apalis_T30_LinuxImageVx.yz.tar.bz2 package with root
+    permissions
+- use any VFAT formatted SD resp. micro D card with at least 1000 MB of free
+    space
+- run update.sh script with -o argument pointing to mount point of
+    above mentioned card
+
+Flash eMMC:
+- EvalBoard V1.0a
+  - depending on JP10/12 connect serial debug console to lower X28 using null
+    modem RS-232 cable resp. X29 using a regular USB cable
+  - insert above prepared SD card into SD/MMC 8bit (X18) or SD/MMC 4bit (X19) socket
+- Ixora V1.0a
+  - connect serial debug console to X22 using null modem RS-232 cable and a
+      10 pin IDC to 9 pin D-sub male connector. (DTK or Intel standard)
+  - insert above prepared micro SD card into micro SD card socket (X10)
+- Boot to U-Boot prompt and start the update:
+  - apply power or reset
+  - hit any key to stop auto booting
+  - if you update from a previous image use the following U-Boot commands:
+    - using SD/MMC 8bit (X18) socket on EvalBoard:
+        setenv drive 1
+        setenv setupdate 'mmc dev ${drive}; mmc rescan; fatload mmc ${drive}:1 ${loadaddr} flash_blk.img; source ${loadaddr}'
+        saveenv
+    - using SD/MMC 4bit (X19) socket on EvalBoard or micro SD card socket (X10) on Ixora:
+        setenv drive 2
+        setenv setupdate 'mmc dev ${drive}; mmc rescan; fatload mmc ${drive}:1 ${loadaddr} flash_blk.img; source ${loadaddr}'
+        saveenv
+  - use 'run setupdate' U-Boot command and then
+  - use 'run update' U-Boot command unless you are updating from an older image
+    in which case:
+    - use 'run update_uboot' command and power cycle or reset and hit any key
+      to stop auto booting
+    - use 'env default -a' command followed by 'saveenv' command
+    - power cycle or reset again and hit any key to stop auto booting
+    - use 'run setupdate' U-Boot command and then
+    - use 'run migrate_v2.3b2' U-Boot command
+
+Boot from eMMC:
+- EvalBoard V1.0a or Ixora V1.0a
+- power cycle
+- upon first boot post-install scripts are run which takes around 2 minutes,
+    please be patient
+
+If the boot loader on the module got corrupted this recovers it by loading U-Boot
+  over USB into the module's RAM and executing it there:
+- EvalBoard V1.0a
+  - connect USB micro A/B (X49) or USB B (X50) to development workstation using
+      micro or regular USB cable
+  - connect serial debug console as stated above
+- Ixora V1.0a
+  - connect USB micro A/B (X9) to development workstation using regular micro USB
+      cable
+  - make sure JP2 is removed and nothing is connected to the lower USB host port
+      X8
+  - for more information please consult Ixora datasheet section 3.3 and chapter 4
+  - connect serial debug console as stated above
+- have the module in recovery mode and load U-Boot over USB to the module's RAM:
+  - lsusb should show a '0955:7130 NVidia Corp.' device if the module is in recovery mode
+  - run ./update.sh -d
+  - stop at the U-Boot prompt and begin the update as stated above
+
+Toradex, May 22, 2015

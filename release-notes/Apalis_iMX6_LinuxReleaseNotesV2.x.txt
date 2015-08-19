@@ -1,0 +1,447 @@
+************************************************
+Release Notes:  Linux Image V2.x for Apalis iMX6
+************************************************
+
+Contents:
+- U-Boot 2015.04 boot loader
+- Linux 3.10.17 kernel, based on Freescale's BSP release imx_3.10.17_1.0.2_ga
+    and patches from Boundary Devices
+- Angstrom 2014.12/OpenEmbedded dizzy/Yocto 1.7 based root file system, using
+    LXDE desktop environment
+
+==> Flashing instructions can be found at the very bottom of this release notes
+
+Licensing:
+- proprietary multimedia codecs included for evaluation purpose only
+- customer required to obtain proper re-distribution license
+
+********************************************************************************
+Linux Image V2.4 Beta 1 (May 18, 2015)
+- U-Boot:
+  - update to U-Boot 2015.04
+  - add generic Toradex config block handling, print exact product description,
+    board revision and serial number to the console
+  - create device-tree properties which make board information
+    available from within Linux userspace through procfs (/proc/device-tree/
+    serial-number, toradex,board-rev and toradex,product-id)
+  - add command to restore Toradex config block ("cfgblock create")
+  - display the Toradex logo, output preference: env var 'panel' | HDMI | Parallel RGB
+  - enabled gpio command line interface
+  - enabled DFU and Mass Storage on USB client, currently slow performance
+  - update procedure now searches for an image on SD card, USB Mass Storage, TFTP server
+- Linux kernel:
+  - added support for Analog Camera Module
+  - enable optional AHCI/SATA driver module
+- Linux user-space:
+  - update OpenEmbedded from daisy to dizzy:
+    - glibc 2.20 (instead of eglibc)
+    - systemd 2.18
+    - Xorg 1.14.7
+    - updated various LXDE packages to newer versions
+  - replace full NTP daemon with systemd's NTP client only systemd-timesyncd
+  - blacklist USB RNDIS for connman, use systemd-networkd to configure RDNIS
+    network interface (new standard IP of the module is 192.168.11.1!)
+  - enable BusyBox resize command to resize the terminal on serial console
+
+- sources git.toradex.com tag Apalis_iMX6_LinuxImageV2.4Beta1_20150518
+  - repository linux-toradex branch toradex_imx_3.10.17_1.0.0_ga
+  - repository u-boot-toradex branch 2015.04-toradex
+
+Note:
+- mount point names changed from /media/<block device name> to /media/<label>
+
+Known Issues:
+- some USB Thumb drivers don't work well in U-Boot
+- USB hub on Evaluation Board not enabled in U-Boot
+- connecting an analogue mic to the on module codec resets the codec, so that
+    neither headphone out nor mic in works anymore. Workaround: Have mic
+    connected before boot or change the output source between DAC/LineIn
+- on first boot the resizing process adversely affects system performance for
+    the first few minutes until completed
+- Display resolution can be set for some output configurations, set the U-Boot
+    environment variable vidargs accordingly.
+- X uses only the fb0 device
+- flash_eth.img requires manual splitting of the root.ext3 file.
+    see the apalis-imx6_bin/flash_eth.scr script
+- SATA drives not mounted automatically
+    workaround 1: click its icon in the file manager
+    workaround 2: mkdir <mountpoint>; mount /dev/<sata partition> <mountpoint>
+- Desktop integration of video playback uses wrong escaping, always plays
+    fullscreen .local/share/applications/gst-launch.desktop
+
+********************************************************************************
+Linux Image V2.3 Beta 6 (January 12, 2015)
+- U-Boot:
+  - no change
+- Linux kernel:
+  - no change
+- Linux user-space:
+  - remove not existing debug feed from opkg configuration
+- Update script
+  - add additional U-Boot binary for use with Apalis iMX6Q 2GB IT module
+
+- sources git.toradex.com tag Apalis_iMX6_LinuxImageV2.3Beta6_20150112
+  - repository linux-toradex branch toradex_imx_3.10.17_1.0.0_ga
+  - repository u-boot-toradex branch 2014.04-toradex
+
+Known Issues:
+- on V1.0 HW connecting an analogue mic to the on module codec resets the codec, so that
+    neither headphone out nor mic in works anymore. Workaround: Have mic
+    connected before boot or change the output source between DAC/LineIn
+- on first boot the resizing process adversely affects system performance for
+    the first few minutes until completed
+- Display resolution can be set for some output configurations, set the U-Boot
+    environment variable vidargs accordingly. Some vidargs_xx variables
+    provided for reference.
+- backlight PWM BKL_PWM (hard-coded to 0 in U-Boot > full brightness on an EDT
+    display).
+- X uses only the fb0 device
+- flash_eth.img requires manual splitting of the root.ext3 file.
+    see the apalis-imx6_bin/flash_eth.scr script
+- a serial getty is started on ttymxc1 in addition to ttymxc0
+    to disable this permanently execute the following command on the module:
+    systemctl disable serial-getty@ttymxc1.service
+
+********************************************************************************
+Linux Image V2.3 Beta 5 (December 19, 2014)
+- U-Boot:
+  - detect HW Version and work with both V1.0 and V1.1 HW
+  - add initial configuration for Apalis iMX6Q 2GB IT, configure
+      with apalis_imx6q2g
+  - add additional version related environment variables to ease scripting
+  - on HW 1.1 route PWM4 also to BKL_PWM by means of an on module buffer
+- Linux kernel:
+  - control RESET_MOCI from the CPU on V1.1 HW, and thus have the correct reset
+      sequence between the PCIe switch and downstream end points.
+      Fixes missing PCIe devices after reboot.
+  - update device tree for HW V1.1 and add a V1.0 HW device-tree
+  - remove some drivers unusable on Apalis iMX6
+  - rename power-key to its correct function wake-up-key
+- Linux user-space:
+  - add eglinfo application
+  - update X server to 1.14.7
+  - /etc/machine-id: ensure it is saved non-volatile
+- Update script
+  - reduce rootfs partition size in the MBR to the available eMMC size
+      to have a valid MBR
+  - fix flash_eth update scripts
+
+- sources git.toradex.com tag Apalis_iMX6_LinuxImageV2.3Beta5_20141219
+  - repository linux-toradex branch toradex_imx_3.10.17_1.0.0_ga
+  - repository u-boot-toradex branch 2014.04-toradex
+
+Known Issues:
+- on V1.0 HW connecting an analogue mic to the on module codec resets the codec, so that
+    neither headphone out nor mic in works anymore. Workaround: Have mic
+    connected before boot or change the output source between DAC/LineIn
+- on first boot the resizing process adversely affects system performance for
+    the first few minutes until completed
+- Display resolution can be set for some output configurations, set the U-Boot
+    environment variable vidargs accordingly. Some vidargs_xx variables
+    provided for reference.
+- backlight PWM BKL_PWM (hard-coded to 0 in U-Boot > full brightness on an EDT
+    display).
+- X uses only the fb0 device
+- flash_eth.img requires manual splitting of the root.ext3 file.
+    see the apalis-imx6_bin/flash_eth.scr script
+- a serial getty is started on ttymxc1 in addition to ttymxc0
+    to disable this permanently execute the following command on the module:
+    systemctl disable serial-getty@ttymxc1.service
+
+********************************************************************************
+Linux Image V2.3 Beta 3 (October 31, 2014)
+- U-Boot:
+  - move configuration to board/toradex
+  - access GPIO with symbolic names
+  - remove PF0100 PMIC settings now fused
+  - fix LVDS panel name in environment
+  - enable fusing using do_fuse command
+  - cleanup configs
+  - use get_ram_size()
+  - use correct boot device in apalis_imx6q.cfg
+  - separate enet reset from pinmuxing
+  - enable USB host power consistently
+- Linux kernel:
+  - add STMPE ADC driver using IIO framework
+  - allow reading board temperature via STMPE ADC driver
+  - fix PCIe by disabling RC/EP test mode
+  - skip unnecessary mxc_hdmi_setup calls
+  - upgrade to Freescale's BSP release imx_3.10.17_1.0.1_ga
+  - remove CONFIG_WATCHDOG_NOWAYOUT
+  - add intial DTE UART support
+  - fix pixelclk polarity for EDT-WVGA
+  - eMMC VCCQ is 3.3V only
+  - optional RS485 handling
+  - move pinmux definitions into Toradex files
+- Linux user-space:
+  - switch to ARMv7 hard-float Thumb2 builds (armv7at2hf-vfp-neon)
+  - support for initial rootfs bigger than RAM, i.e. greater than ~900MB
+  - updated LXDM to 0.5 with proper systemd-logind support
+  - removed ConsoleKit session/login manager (superseded by systemd-logind)
+  - lxsession shows hibernate button only when kernel support is available
+  - various build and dependency fixes for LXDE recipes
+
+- sources git.toradex.com tag Apalis_iMX6_LinuxImageV2.3Beta3_20141031
+  - repository linux-toradex branch toradex_imx_3.10.17_1.0.0_ga
+  - repository u-boot-toradex branch 2014.04-toradex
+
+Known Issues:
+- connecting an analogue mic to the on module codec resets the codec, so that
+    neither headphone out nor mic in works anymore. Workaround: Have mic
+    connected before boot or change the output source between DAC/LineIn
+- on first boot the resizing process adversely affects system performance for
+    the first few minutes until completed
+- Display resolution can be set for some output configurations, set the U-Boot
+    environment variable vidargs accordingly. Some vidargs_xx variables
+    provided for reference.
+- backlight PWM BKL_PWM (hard-coded to 0 in U-Boot > full brightness on an EDT
+    display).
+- X uses only the fb0 device
+- due to the flash_eth.img update script currently being broken please use the
+    SD card flashing method (e.g. flash_mmc.img) for now
+
+********************************************************************************
+Linux Image V2.3 Beta 1 (August 4, 2014)
+- U-Boot
+  - Based on mainline U-Boot 2014.04
+  - Prepare for UART in DTE mode
+  - Enable device tree booting
+  - Fix kernel only update using fatwrite
+  - Enable update from MMC or SD card slot
+- Linux kernel:
+  - Update from 3.0.35 to 3.10.17
+  - Use device tree
+  - Fix the validity bit in S/PDIF
+  - Use PCIe with GEN1 speed
+  - Add a VideoDAC driver
+  - Add a touchscreen driver for TouchRevolution Fusion 7 / 10 panels
+  - No analog input driver any more
+- Linux user-space
+  - Update from oe's dora to daisy
+  - Export Apalis GPIOs with systemd service
+  - Integrate u-boot-fw-utils fw_printenv fw_setenv
+  - Remove machine feed URL, as it does not exist
+  - Only start xinput-calibrator.service when LXDM is enabled
+  - Use X server 1.14.4
+  - Disable openssh's use of reverse DNS
+  - Add gstreamer-rtp-manager and unclutter
+
+- sources git.toradex.com tag Apalis_iMX6_LinuxImageV2.3Beta1_20140804
+  - repository linux-toradex branch toradex_imx_3.10.17_1.0.0_ga
+  - repository u-boot-toradex branch 2014.04-toradex
+
+Known Issues:
+- connecting an analogue mic to the on module codec resets the codec, so that
+    neither headphone out nor mic in works anymore. Workaround: Have mic
+    connected before boot or change the output source between DAC/LineIn
+- on first boot the resizing process adversely affects system performance for
+    the first few minutes until completed
+- Display resolution can be set for some output configurations, set the U-Boot
+    environment variable vidargs accordingly. Some vidargs_xx variables
+    provided for reference.
+- backlight PWM BKL_PWM (hard-coded to 0 in U-Boot > full brightness on an EDT
+    display).
+- X uses only the fb0 device
+- initial rootfs must fit in RAM, i.e. it must not be greater than ~900MB
+- PCIe does enumerate devices but further access does fail due to a
+  misconfiguration of the Linux kernel. Unset CONFIG_RC_MODE_IN_EP_RC_SYS
+  and recompile the kernel.
+  http://git.toradex.com/gitweb/linux-toradex.git/commit/09c7ac4adbb2e807b921d02caacc7c53abdedac7
+- The Angstrom-Distribution since switched to using ARM Thumb2 instruction set.
+  To use their binary feeds e.g. using the opkg package manager please change in
+  /etc/opkg/base-feed.conf et. al. armv7ahf-vfp-neon to armv7at2hf-vfp-neon.
+  We consider switching in our next release.
+
+********************************************************************************
+Linux Image V2.2 Beta 1 (April 04, 2014)
+- U-Boot:
+  - initial release
+- Linux kernel:
+  - initial release
+- rootfs / oe-core:
+  - initial release
+- sources git.toradex.com tag Apalis_iMX6_LinuxImageV2.2Beta1_20140404
+
+Known Issues:
+- connecting an analogue mic to the on module codec resets the codec, so that
+    neither headphone out nor mic in works anymore. Workaround: Have mic
+    connected before boot or change the output source between DAC/LineIn
+- on first boot the resizing process adversely affects system performance for
+    the first few minutes until completed
+- Display resolution can be set for some output configurations, set the U-Boot
+    environment variable vidargs accordingly. Some vidargs_xx variables
+    provided for reference.
+- backlight PWM BKL_PWM (hard-coded to 0 in U-Boot > full brightness on an EDT
+    display)
+- X uses only the fb0 device
+- video decoding leaks resources, after a while it stops working
+- initial rootfs must fit in RAM, i.e. it must not be greater than ~900MB
+- SSH password authentication is disabled by default (see PasswordAuthentication
+    setting in /etc/ssh/sshd_config)
+
+********************************************************************************
+Notes:
+- 115200 baud serial debug console on UART1 (EvalBoard lower X28 resp.
+    X29 depending on JP10/12, X22 on Ixora) without any handshake
+- user account: root with empty password
+- eMMC: partition 1: vfat with kernel, partition 2 ext3 root file system
+- opkg package manager
+- HDMI aka DVI-D: not all pixel clock frequencies allow for HDMI audio
+- Linux host used for update preparation requires proper 32-bit execution
+    environment (e.g. install ia32-libs on 64-bit Ubuntu) and awk (e.g. install
+    gawk on Ubuntu)
+
+Working on latest image:
+- U-Boot boot loader
+  - environment storage in eMMC
+  - Gigabit Ethernet
+  - MMC/SD cards
+  - eMMC flash
+  - RAM size auto detection
+  - serial console debug UART1
+  - Toradex Apalis configuration block handling
+  - USB storage as host on USB host ports
+  - framebuffer support
+- Linux kernel
+  - GPIOlib /sys/class/gpio
+  - PWM LEDs /sys/class/leds/
+  - temperature sensor CPU /sys/devices/virtual/thermal/thermal_zone0/temp
+      board: /sys/devices/soc0/soc.1/2100000.aips-bus/21a4000.i2c/i2c-1/1-0041/stmpe-adc/iio:device0/in_temp8_raw
+  - Gigabit Ethernet (i.MX 6 errata, only 400 Mbps sustainable data rate)
+  - eMMC ext3
+  - serial console debug UART1
+  - UART2, UART3 and UART4
+  - optional RS485
+  - I2C via /dev/i2c-X
+  - 8-bit MMC card mmc1
+  - 4-bit SD card mmc2
+  - framebuffer console
+  - HDMI audio
+  - analogue audio playback and capture, resistive touch
+    - audio noise is high on V1.0 HW, workaround is to set headphone volume
+        to maximum and use the DAC volume
+  - S/PDIF
+  - SPI via /dev/spidev32766.0 aka SPI1 and /dev/spidev32765.0 aka SPI2
+  - custom Ethernet MAC address
+  - serial number and board revision
+  - USB host port
+  - USB audio driver
+  - USB webcam
+  - USB raw HID device /dev/hidrawX
+  - USB device Ethernet RNDIS, disabled
+  - automatic USB device/host/suspend detection aka full OTG support
+  - analog input via IIO framework
+  - parallel camera interface
+  - CAN via can0 and can1
+  - PCIe (regular ports and mini-PCIe slot)
+  - SATA (regular port or mSATA slot)
+  - DVFS power management
+  - suspend LP1
+  - watchdog
+- Linux user-space
+  - Firefox browser
+  - Gstreamer playback
+  - OpenGL
+  - LXDE
+  - resize rootfs partition to full eMMC capacity
+  - GPIO config tool
+- Display:
+  - only first output used by X11
+  - dual output on HDMI and LVDS, both in 1920x1080
+  - single output on EDT 7" Display
+  - single output to analog RGB, aka VGA output
+  - resolution setting through modedb string in kernel command line
+
+Not working or not tested:
+- U-Boot boot loader
+  - USB OTG1 support
+- Linux kernel
+  - IrDA
+  - RS-422
+  - All UART control lines on V1.0 HW
+  - SIM card
+  - HDA audio IF on MXM connector (not possible with i.MX 6)
+  - I2S / AC97 on MXM connector
+  - CSI2 camera interface
+- Linux user-space
+  - Gstreamer encoding (not tested)
+- Display:
+  - on some monitors HDMI EDID does not negotiate correct timings,
+      adding/removing mxc_hdmi.only_cea=1 to the kernel command line may help
+  - more than one framebuffer used as a X screen
+  - backlight PWM on V1.0 HW
+  - DSI output
+
+******************************************************************************
+eMMC Boot: Apalis iMX6Q 1GB V1.0a (Sample), Apalis iMX6D 512MB V1.1a (Sample), 
+           Apalis iMX6Q 1GB V1.1a (Sample), Apalis iMX6Q 2GB IT V1.1a (Sample)
+******************************************************************************
+Note: recompile U-Boot with apalis_imx6q2g config for Apalis iMX6Q 2GB IT V1.1a
+
+Initial Preparation:
+- download and extract Apalis_iMX6_LinuxImageVx.yz.tar.bz2 package with root
+    permissions
+- use any VFAT formatted SD resp. micro SD card with at least 1000 MB of free
+    space
+- run update.sh script with -o argument pointing to mount point of
+    above mentioned card
+
+Flash eMMC:
+- EvalBoard V1.0a
+  - depending on JP10/12 connect serial debug console to lower X28 or X29 using
+      null modem RS-232 or regular USB cable
+  - insert above prepared SD card into SD/MMC 8bit (X18) or SD/MMC 4bit (X19) socket
+- Ixora V1.0a
+  - connect serial debug console to X22 using null modem RS-232 cable and a
+      10 pin IDC to 9 pin D-sub male connector. (DTK or Intel standard)
+  - insert above prepared micro SD card into SD card socket (X10)
+  - if you update from a V2.2 image either use an EvalBoard for update or use
+    on Ixora the U-Boot command:
+	  setenv drive 2
+	  setenv setupdate 'fatload mmc ${drive}:1 ${loadaddr} flash_mmc.img; source ${loadaddr}'
+	  save
+- Boot to U-Boot prompt and start the update:
+  - apply power or reset
+  - hit any key to stop auto booting
+  - use 'run setupdate' U-Boot command and then
+  - use 'run update' U-Boot command
+    for "Apalis iMX6Q 2GB IT V1.1a" use 'run update_it' instead
+- If you updated from an older image. (without a device tree)
+  - power cycle or reset and hit any key to stop auto booting
+    - use 'printenv' to get your current u-boot environment
+    - use 'env default -a' to set the u-boot environment to its default value
+    - optionally change the environment to your needs
+    - use 'saveenv' to make the changes permanent
+- Update a single component
+  - U-Boot
+    use 'run setupdate' and then 'run update_uboot'
+    for "Apalis iMX6Q 2GB IT V1.1a" use 'run update_uboot_it' instead
+  - Kernel or Linux Device Tree
+    use 'run setupdate' and then 'run update_kernel' or 'run update_fdt' respectively
+
+Boot from eMMC:
+- above given update command should automatically perform a soft re-boot upon successful completion
+- optionally power cycle
+- upon first boot post-install scripts are run which takes around 2 minutes,
+    please be patient
+
+If the boot loader on the module got corrupted this recovers it by loading U-Boot
+  over USB into the module's RAM and executing it there:
+- EvalBoard V1.0a
+  - connect USB micro A/B (X49) or USB B (X50) to development workstation using
+      micro or regular USB cable
+  - connect serial debug console as stated above
+- Ixora V1.0a
+  - connect USB micro A/B (X9) to development workstation using regular micro USB
+      cable
+  - make sure JP2 is removed and nothing is connected to the lower USB host port
+      X8
+  - for more information please consult Ixora datasheet section 3.3 and chapter 4
+  - connect serial debug console as stated above
+- have the module in recovery mode and load U-Boot over USB to the module's RAM:
+  - lsusb should show a 15a2:0054 Freescale Semiconductor, Inc. device if
+      the module is in recovery mode
+  - run ./update.sh -d
+  - stop at the U-Boot prompt and begin the update as stated above
+
+Toradex, May 22, 2015

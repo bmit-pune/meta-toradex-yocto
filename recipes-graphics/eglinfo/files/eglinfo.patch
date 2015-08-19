@@ -1,0 +1,15 @@
+diff -Naur git.orig/src/glapi_stats.cpp git/src/glapi_stats.cpp
+--- git.orig/src/glapi_stats.cpp	2014-11-18 14:45:09.249549002 +0100
++++ git/src/glapi_stats.cpp	2014-11-18 14:45:47.869736011 +0100
+diff -Naur git.orig/src/platform_x11_generic.cpp git/src/platform_x11_generic.cpp
+--- git.orig/src/platform_x11_generic.cpp	2014-11-18 14:45:09.252549095 +0100
++++ git/src/platform_x11_generic.cpp	2014-11-18 14:45:57.578034399 +0100
+@@ -91,7 +91,7 @@
+ 	if (m_egl_native_window)
+ 		XDestroyWindow(
+ 			  reinterpret_cast < Display* > (m_native_display.get_egl_native_display())
+-			, reinterpret_cast < Window > (m_egl_native_window)
++			, reinterpret_cast < Window > ((long unsigned int)m_egl_native_window)
+ 		);
+ }
+ 

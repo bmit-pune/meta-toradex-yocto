@@ -1,0 +1,10 @@
+#UDEV  [504.185864] change   /devices/virtual/switch/hdmi (switch)
+#ACTION=change
+#DEVPATH=/devices/virtual/switch/hdmi
+#SEQNUM=1794
+#SUBSYSTEM=switch
+#SWITCH_NAME=hdmi
+#SWITCH_STATE=0
+#USEC_INITIALIZED=4180704
+
+SUBSYSTEM=="switch", DEVPATH=="/devices/virtual/switch/hdmi", ATTR{state}=="1", RUN+="/bin/sh -c 'DISPLAY=:0.0 xrandr --output HDMI-1 --auto'"

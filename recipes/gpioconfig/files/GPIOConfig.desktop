@@ -1,0 +1,11 @@
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Icon[C]=GPIOConfig.png
+Exec=/usr/bin/GPIOConfig
+Name[C]=GPIOConfig
+Name=GPIOConfig
+Icon=GPIOConfig.png

@@ -1,0 +1,37 @@
+mode "640x480-60"
+    # D: 25.175 MHz, H: 31.500 kHz, V: 60.001 Hz
+    geometry 640 480 640 480 24
+    timings 39722 48 16 33 10 96 2
+endmode
+
+mode "768x576-75"
+    # D: 49.188 MHz, H: 46.580 kHz, V: 75.008 Hz
+    geometry 768 576 768 576 16
+    timings 20330 128 32 32 8 128 5
+endmode
+
+mode "800x480-60"
+    # D: 32.46 MHz, H: 30.38 kHz, V: 53.583 Hz
+    geometry 800 480 800 480 16
+    timings 32460 128 64 22 20 64 3
+endmode
+
+mode "800x600-60"
+    # D: 39.273 MHz, H: 37.190 kHz, V: 59.599 Hz
+    geometry 800 600 800 600 16
+    timings 25463 160 21 16 1 80 2
+    hsync high
+    vsync high
+endmode
+
+mode "1024x600-60"
+    # D: 48.000	MHz, H: 40.816	kHz, V: 62.891	Hz
+    geometry 1024 600 1024 600 16
+    timings 20833 104 24 43 20 5 5
+endmode
+
+mode "1024x768-60"
+    # D: 65.00 MHz, H: 48.363 kHz, V: 60.00 Hz
+    geometry 1024 768 1024 768 16
+    timings 15385 160 24 29 3 136 6
+endmode

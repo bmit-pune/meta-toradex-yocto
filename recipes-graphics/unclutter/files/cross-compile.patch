@@ -1,0 +1,10 @@
+--- unclutter-1.09/Makefile.orig	2007-02-05 23:52:40.000000000 +0100
++++ unclutter-1.09/Makefile	2013-05-14 19:08:13.612112758 +0200
+@@ -1,7 +1,6 @@
+ # Makefile for unclutter.  Throw this away and use the Imakefile if you can.
+               TOP = .
+       CURRENT_DIR = .
+-               CC = gcc
+              LKED = $(CC)
+           INSTALL = install
+              MAKE = make

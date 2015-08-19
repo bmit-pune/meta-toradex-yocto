@@ -1,0 +1,1 @@
+../library/imx6/update.sh

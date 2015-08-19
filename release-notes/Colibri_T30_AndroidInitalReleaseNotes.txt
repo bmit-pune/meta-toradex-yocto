@@ -1,0 +1,99 @@
+*****************************************************
+Release Notes:  Android Preview Image for Colibri T30
+*****************************************************
+
+Please note that this Android Preview Image is for evaluation purposes only, and is provided as-is.
+Customers should also note that support is limited, and Android source code for this image will not be published at the present time.
+
+Contents:
+- U-Boot 2011.06 boot loader
+- Linux 3.1.10 kernel, based on NVIDIA's Linux for Tegra (L4T) release 16-r3
+- Android JB 4.2.1 file system
+
+Licensing:
+- proprietary multimedia codecs included for evaluation purpose only
+- customer required to obtain proper re-distribution license
+
+Notes:
+- 115200 baud serial debug console on UARTA aka FFUART (lower X25 on EvalBoards, X13 on Iris) without any handshake
+- ext3 eMMC file systems
+- Linux host used for recovery mode flashing requires proper 32-bit execution environment (e.g. install ia32-libs on 64-bit Ubuntu) and awk (e.g. install gawk on Ubuntu)
+
+Working:
+- eMMC flash boot
+- serial console debug UARTA
+- TFTLCD aka DVI-A with VGA, 800x480 (EDT ET070080DH6), 1024x600 (TouchRev Fusion 10) or 720p
+- HDMI aka DVI-D 720p display dynamically switching to 1080p for full HD content
+- USB host port
+- USB keyboard/mouse
+- USB memory stick
+- ADB via USB device aka micro USB port
+- Ethernet eth0 using DHCP
+- browser
+- GPIO keys (back using SODIMM pin 133 on Iris X16-14, find 77, home 127, menu 135, power 45 X16-20, volume down 24, up 22)
+- LP1 suspend (wake-up via back or power key or USB keyboard)
+- resistive touch on 5.7" EDT ET057090DHU (VGA) or 7" ET070080DH6 albeit uncalibrated
+- multitouch using TouchRev Fusion 10 (reset using SODIMM pin 101 on Iris X16-16 and pen down IRQ SODIMM 103 X16-15)
+- PWM backlight via regular Android setting
+
+- sources git.toradex.com
+  - U-Boot tag T30_LinuxImageV2.0Alpha1_20130122
+  - Linux commit 5dcf120a31010d2d64846c259ddeb7187cb41cda
+
+Not working:
+- MMC/SD card
+- I2S audio
+- video playback
+- HDMI SPDIF audio
+- power management
+
+Known issues:
+- time needs to be set for download to work
+
+*************************************
+eMMC Boot: Colibri T30 V1.1b (Sample)
+*************************************
+
+Initial Preparation:
+- download and extract T30_AndroidPreviewImage.tar.bz2 package
+
+Optional Google Apps Installation:
+- download latest gapps-jb-xyz-signed.zip as described on http://wiki.cyanogenmod.org/w/Gapps
+- extract contents of system folder from gapps-jb-xyz-signed.zip into previously extracted rootfs folder
+- e.g. unzip gapps-jb-xyz-signed.zip; sudo cp -pPR system/* rootfs
+
+Optional TFTLCD Resolution Selection:
+- LVDS aka TFTLCD resolution hard-coded in kernel
+- following pre-compiled kernels provided
+  uImage-3.1.10-colibri_t30-android-4.2.1-720p
+  uImage-3.1.10-colibri_t30-android-4.2.1-et070080dh6
+  uImage-3.1.10-colibri_t30-android-4.2.1-fusion10
+  uImage-3.1.10-colibri_t30-android-4.2.1-vga
+- just symlink desired one as follows:
+  cd bin; ln -fs uImage-3.1.10-colibri_t30-android-4.2.1-720p uImage; cd ..
+- separate kernel replacement can be achieved using -k update.sh script option
+
+Flash eMMC:
+- EvalBoard V3.1a
+  - connect USB B (X29) or USB micro A/B (X30) to development workstation using regular or micro USB cable
+  - the jumper JP2 must be open
+  - press and hold recovery mode switch (SW9) during power up
+- Iris V1.1a
+  - connect USB micro A/B (X12) to development workstation using regular micro USB cable
+  - short pin 1-2 of JP1 on Iris for RECOVERY
+(other carrier boards see http://developer.toradex.com/knowledge-base/txx-recovery-mode)
+- make sure that the carrier board supports USB high speed
+  - Iris & EvalBoard V3.1a OK, for other carrier boards see http://developer.toradex.com/knowledge-base/usb-2.0-high-speed-%28480mbps%29 )
+- apply power or reset
+- run update.sh script
+
+Boot from eMMC:
+- EvalBoard V3.1a
+  - do no longer press SW9
+- Iris V1.1a
+  - do no longer short any pins of JP1
+- power cycle
+- upon first boot emergency remount prepares cache and data partitions and reboots after 15 seconds
+- upon second boot Java classes are preloaded and cached which takes around 2 minutes, please be patient
+
+Toradex, December 3, 2014

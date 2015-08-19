@@ -1,0 +1,10 @@
+[Unit]
+Description=start X and qtdemo
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/qtdemo-init start
+ExecStop=/usr/bin/qtdemo-init stop
+
+[Install]
+WantedBy=graphical.target

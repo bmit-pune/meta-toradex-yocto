@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=nvgstplayer
+Exec=nvgstplayer --uri %u
+Terminal=true
+NoDisplay=true
